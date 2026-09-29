@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+coverage/
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# 本地配置和运行数据
+.env
+backend/.env
+backend/data/
+frontend/.env
+
+# 编辑器和系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# 运行数据与临时产物
+data/
+tmp/
+output/
+backend/tmp/
