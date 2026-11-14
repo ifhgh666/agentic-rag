@@ -211,6 +211,8 @@ def test_cli_is_read_only_and_enforces_review_gate(gold_fixture, tmp_path):
 
 def test_candidate_covers_seed_questions_and_ten_different_scenarios():
     path = Path(__file__).resolve().parents[3] / "specs/004-query-clarification-ragas/gold-cases-v1.json"
+    if not path.is_file():
+        pytest.skip("历史题集需要本地 Spec Kit 归档")
     dataset = json.loads(path.read_text(encoding="utf-8"))
     assert {f"Q{i}" for i in range(1, 6)}.issubset({case["case_id"] for case in dataset["cases"]})
     extra = [case for case in dataset["cases"] if case["case_id"] not in {f"Q{i}" for i in range(1, 6)}]

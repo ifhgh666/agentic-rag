@@ -14,6 +14,14 @@ from scripts.validate_v4_gold_dataset import DEFAULT_DATASET, normalized, valida
 
 ROOT = Path(__file__).resolve().parents[3]
 FEATURE = ROOT / "specs/004-query-clarification-ragas"
+ARCHIVE_FILES = (
+    "gold-cases-v1.json",
+    "gold-cases-v2.json",
+    "gold-cases-v2-rubrics.json",
+    "clarification-state-fixtures-v2.json",
+)
+if any(not (FEATURE / name).is_file() for name in ARCHIVE_FILES):
+    pytest.skip("历史题集需要本地 Spec Kit 归档", allow_module_level=True)
 
 
 def read_json(name):
