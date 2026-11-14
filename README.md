@@ -4,7 +4,7 @@
 
 **本地知识库** · OpenAI 兼容接口 · Qdrant 混合检索 · LangGraph 问答编排
 
-[功能](#功能) · [技术栈](#技术栈) · [工作流程](#工作流程) · [项目结构](#项目结构) · [快速开始](#快速开始) · [项目文档](#项目文档)
+[功能](#功能) · [技术栈](#技术栈) · [工作流程](#工作流程) · [Agent Loop](#agent-loop) · [项目结构](#项目结构) · [快速开始](#快速开始) · [项目文档](#项目文档)
 
 ![文脉问答台显示关于测试装置的回答、PDF 来源，以及查看原文和执行过程的入口](docs/assets/wenmai-chat.png)
 
@@ -47,15 +47,61 @@
 flowchart LR
     PDF["文本 PDF"] --> Chunks["解析与父子分块"]
     Chunks --> Index["Qdrant 混合索引"]
-    Ask["用户提问"] --> Route{"需要查询知识库？"}
-    Route -->|否| Direct["直接回答"]
-    Route -->|是| Clarify{"检索条件足够？"}
-    Clarify -->|不足| Follow["请用户补充"]
-    Follow --> Clarify
-    Clarify -->|足够| Search["向量 + BM25 检索"]
-    Index --> Search
-    Search --> Answer["生成答案并附来源"]
+    Ask["用户提问"] --> Loop["Agent Loop"]
+    Loop <-->|按需检索| Index
+    Loop --> Answer["答案与来源"]
 ```
+
+## Agent Loop
+
+文脉使用 **LangGraph 主图 + 研究子图**。模型负责工具需求判断、问题分析、研究和作答，程序负责分发子问题、执行工具、维护状态及检查研究边界。
+
+### 主图：消息分流与任务编排
+
+```mermaid
+flowchart TD
+    Message["用户消息与会话上下文"] --> Select["select_tool<br/>模型判断是否需要知识库"]
+    Select --> History["summarize_history<br/>按需摘要历史，重置本轮分支答案"]
+    History --> Needs{"需要知识库？"}
+    Needs -->|否| Direct["answer_direct<br/>模型直接回答"]
+    Needs -->|是| Rewrite["rewrite_query<br/>改写、拆分子问题并判断信息充分性"]
+    Rewrite --> Clear{"信息充分？"}
+    Clear -->|否| Pending["request_clarification 前暂停<br/>checkpoint 保存原问题与补充"]
+    Pending -->|用户补充后恢复| Rewrite
+    Pending -.->|开始新问题，清除待办| Select
+    Pending -->|取消| Cancel["清除待办并结束<br/>不调用模型"]
+    Clear -->|是| Dispatch["Send 并行分发<br/>每个子问题独立研究"]
+    Dispatch --> Research["agent · 研究子图<br/>模型与工具循环，见下图"]
+    Research --> Aggregate["aggregate_answers<br/>等待分支完成，按子问题顺序统一聚合"]
+    Direct --> Output["SSE 交付答案与来源"]
+    Aggregate --> Output
+```
+
+待补充消息在同一会话恢复问题分析；显式开始新问题时重新进行工具需求判断。直接回答的来源为空，单个子问题的研究结果也会经过最终聚合。
+
+### 研究子图：模型与工具循环
+
+```mermaid
+flowchart TD
+    Question["单个子问题与独立分支状态"] --> Orchestrator["orchestrator<br/>模型选择继续研究或作答"]
+    Orchestrator --> Calls{"返回工具调用？"}
+    Calls -->|无| Collect["collect_answer<br/>收集分支答案及已检索上下文"]
+    Calls -->|有| Budget{"迭代已达 10 次<br/>或累计工具请求超过 8 次？"}
+    Budget -->|是| Fallback["fallback_response<br/>模型基于已有资料生成收尾答案"]
+    Fallback --> Collect
+    Budget -->|否| Tools["tools · ToolNode<br/>search_child_chunks<br/>retrieve_parent_chunks"]
+    Tools --> Check{"should_compress_context<br/>上下文超过动态阈值？"}
+    Check -->|否，继续研究| Orchestrator
+    Check -->|是| Compress["compress_context<br/>模型压缩，保留检索标识并清理旧消息"]
+    Compress --> Orchestrator
+    Collect --> Return["回传主图，参与 aggregate_answers"]
+```
+
+- **两种检索工具**：`search_child_chunks` 通过 Dense + BM25 搜索子块；`retrieve_parent_chunks` 读取完整父块，补充章节上下文。研究提示要求首轮先搜索子块，后续由模型决定继续搜索、读取父块或回答。
+- **两类摘要**：主图整理会话历史；研究子图在工具执行后检查上下文容量，超过动态阈值时压缩研究记录，再回到模型继续决策。
+- **分支边界**：计数包含当前模型回复中的工具请求。触及上图边界时，本批工具不执行，转为收尾；没有工具请求时直接收集答案。摘要、压缩、收尾和聚合的模型调用另行发生。
+
+图与当前实现对应：[图装配](backend/app/rag/graph.py)、[节点](backend/app/rag/nodes.py)、[条件路由](backend/app/rag/edges.py)、[工具](backend/app/rag/tools.py)和[会话恢复](backend/app/core/reference_session.py)。
 
 ## 项目结构
 
