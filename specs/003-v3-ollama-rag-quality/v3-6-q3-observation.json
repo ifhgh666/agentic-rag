@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "capture_kind": "formal_index_snapshot_graph_run_summary",
+  "captured_at": "2026-10-03T12:35:24.546674+00:00",
+  "request_id": "de583c39-8048-414f-bdaf-fdaa9516811e",
+  "thread_id": "v3-6-diagnostic-60d77a15-ba32-4721-8015-feba8034676d",
+  "question": "过流保护后如何恢复？",
+  "model": "qwen3:4b-instruct",
+  "workbench_ui_run": false,
+  "raw_capture": "backend/tmp/v3-6/local-capture.json",
+  "raw_capture_sha256": "C295CF8A3F67D440A845CCBDFA28C5EA756315BD246275516B9DC058625109F3",
+  "index_version": "c5dedde022ed7f1e8a5ef7a041b2d228a5e756f08617ce6a7a629b4d5fde7409",
+  "snapshot_kind": "正式 Qdrant SQLite 一致性副本；沿用现有向量与 Parent，不重解析、不重建，不是工作台 UI 验收",
+  "sparse_query_equivalence": [{"query": "过流保护后如何恢复？", "equivalent": true}],
+  "retrieval_ranking": [
+    {"rank": 1, "child_id": "183441e1-d3f9-48ef-b089-6e482f742952", "parent_id": "f4ce8c10-13a6-40ba-b2f0-91aa2d7b45e1", "score": 0.9793, "page_from_parent": 4},
+    {"rank": 2, "child_id": "b498bc75-9783-47e4-b452-2c4ba7ab8d41", "parent_id": "203db154-9cbc-4055-9ec9-7978a20edbfc", "score": 0.7874, "page_from_parent": 3},
+    {"rank": 3, "child_id": "22c9e43e-5830-4d69-bbdf-22979749050c", "parent_id": "d68543a3-b458-478e-9d62-e63132eef866", "score": 0.6175, "page_from_parent": 3},
+    {"rank": 4, "child_id": "843ff681-4eef-4045-9100-e20944c8f0a9", "parent_id": "203db154-9cbc-4055-9ec9-7978a20edbfc", "score": 0.5845, "page_from_parent": 3},
+    {"rank": 5, "child_id": "217771b9-f0ee-49c5-916c-fca9d15d8c09", "parent_id": "2d846c9d-02bb-48be-af3e-79a5656069de", "score": 0.5086, "page_from_parent": 2},
+    {"rank": 6, "child_id": "bee198d8-6f46-4115-990e-f2ba5a7a39a6", "parent_id": "afd152b5-dc42-4030-8b3d-2c12d578aa3f", "score": 0.4081, "page_from_parent": 1}
+  ],
+  "generation_records": [
+    {"citation_id": "E1", "record_id": "f4ce8c10-13a6-40ba-b2f0-91aa2d7b45e1", "page_start": 4, "relevance": 8, "tokens_estimate": 356},
+    {"citation_id": "E2", "record_id": "203db154-9cbc-4055-9ec9-7978a20edbfc", "page_start": 3, "relevance": 4, "tokens_estimate": 497},
+    {"citation_id": "E3", "record_id": "d68543a3-b458-478e-9d62-e63132eef866", "page_start": 3, "relevance": 3, "tokens_estimate": 224},
+    {"citation_id": "E4", "record_id": "2d846c9d-02bb-48be-af3e-79a5656069de", "page_start": 2, "relevance": 3, "tokens_estimate": 371},
+    {"citation_id": "E5", "record_id": "afd152b5-dc42-4030-8b3d-2c12d578aa3f", "page_start": 1, "relevance": 1, "tokens_estimate": 238}
+  ],
+  "detail_fragment_in_actual_generator_input": "应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。",
+  "context_compressed": false,
+  "context_tokens_before_estimate": 1687,
+  "context_tokens_after_estimate": 1687,
+  "context_threshold_estimate": 4000,
+  "raw_model_answer_json": {
+    "is_answerable": true,
+    "answer": "检查负载并确认没有短路，按确认键清除告警，然后手动重新启动。",
+    "citations": [{"citation_id": "E1", "quote": "检查负载并确认没有短路，按确认键清除告警 ，然后手动重新启动。"}],
+    "conflict": false
+  },
+  "response": "检查负载并确认没有短路，按确认键清除告警，然后手动重新启动。\n\n依据：\n- “检查负载并确认没有短路，按确认键清除告警 ，然后手动重新启动。” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 6. 推荐问答测试集]",
+  "validation_status": "accepted",
+  "verification": {"schema_version": 2, "evidence_status": "found", "citation_status": "verified", "numeric_status": "not_evaluated", "completeness_status": "not_evaluated", "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"},
+  "model_calls": [
+    {"node": "query_analysis", "input_tokens": 604, "output_tokens": 43, "duration_ms": 22836},
+    {"node": "collect_answer", "input_tokens": 1622, "output_tokens": 69, "duration_ms": 35026}
+  ],
+  "usage": {"source": "provider", "model_calls": 2, "total_tokens": 2338, "duration_ms": 59840, "cloud_calls": 0},
+  "literal_missing_steps": ["disconnect_load", "wait_discharge"],
+  "agent_observation": "答案正文确实省略断开负载与等待完全放电，仅引用第 4 页简表；第 3 页完整安全流程已进入实际提示词。",
+  "gold_human_review_completed": false,
+  "protected_files_unchanged": true
+}

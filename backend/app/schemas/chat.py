@@ -2,13 +2,34 @@ from enum import Enum
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class ChatRequest(BaseModel):
-    question: str = Field(min_length=1, max_length=2000)
+    model_config = ConfigDict(extra="forbid")
+    question: str = Field(default="", max_length=2000)
     thread_id: str | None = Field(default=None, min_length=1, max_length=128)
     conversation_id: str | None = Field(default=None, min_length=1, max_length=128)
+    action: Literal["auto", "continue_clarification", "new_question", "cancel"] = "auto"
+
+    @field_validator("question", "thread_id", "conversation_id")
+    @classmethod
+    def strip_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        cleaned = value.strip()
+        return cleaned
+
+    @model_validator(mode="after")
+    def validate_action(self) -> "ChatRequest":
+        if self.thread_id == "" or self.conversation_id == "":
+            raise ValueError("thread_id must not be blank")
+        if self.action == "cancel":
+            if not self.thread_id:
+                raise ValueError("cancel requires thread_id")
+        elif not self.question:
+            raise ValueError("question must not be blank")
+        return self
 
 
 class RetrieveRequest(BaseModel):
@@ -27,6 +48,8 @@ class RetrievalResult(BaseModel):
     retrieval_mode: Literal["dense", "hybrid"] = "hybrid"
     content_preview: str
     text: str | None = None
+    page_start: int | None = None
+    page_end: int | None = None
 
 
 class SourceRef(BaseModel):
@@ -37,11 +60,13 @@ class SourceRef(BaseModel):
     page_end: int | None = None
 
 
-class EvaluationResult(BaseModel):
-    relevance: int = Field(ge=0, le=100)
-    faithfulness: int = Field(ge=0, le=100)
-    completeness: int = Field(ge=0, le=100)
-    overall: int = Field(ge=0, le=100)
+class VerificationResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal[2] = 2
+    evidence_status: Literal["found", "insufficient", "not_evaluated"]
+    citation_status: Literal["verified", "issue_found", "not_applicable", "not_evaluated"] = "not_evaluated"
+    numeric_status: Literal["verified", "issue_found", "not_applicable", "not_evaluated"] = "not_evaluated"
+    completeness_status: Literal["verified", "issue_found", "not_evaluated"] = "not_evaluated"
     reason: str
 
 
@@ -52,7 +77,6 @@ class PipelineStage(str, Enum):
     score_filtering = "score_filtering"
     parent_retrieval = "parent_retrieval"
     context_building = "context_building"
-    context_compression = "context_compression"
     answer_generation = "answer_generation"
     answer_evaluation = "answer_evaluation"
 

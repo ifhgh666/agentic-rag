@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from app.rag.sparse_embeddings import SparseEmbeddingService
+from app.knowledge.embeddings import SparseEmbeddingService
 
 
 class FakeModel:

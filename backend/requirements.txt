@@ -14,6 +14,7 @@ langgraph>=1.2.12,<2.0
 langchain-openai>=1.6.5,<2.0
 langchain-ollama>=1.1,<2.0
 pytest>=8.0,<9.0
+jsonschema>=4.18,<5.0  # 测试生成 schema 的独立校验；不用于运行时修复输出。
 httpx>=0.27,<1.0
 
 # fastembed 已由 qdrant-client[fastembed] 安装；默认本地 ONNX Dense。

@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-03T13:30:30.846614+00:00",
+  "workbench_ui_run": false,
+  "ragas_run": false,
+  "judge_calls": 0,
+  "cases": [
+    {
+      "case_id": "Q1",
+      "question": "设备上电前需要检查哪些内容？",
+      "response": "原文流程（请核对适用条件）：\n设备上电前，操作人员应确认输入电源、接地线和负载连接状态。确认无误后，按照以下顺序启动： 一、检查输入电压。使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。 二、检查面板状态。确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。 三、接通主电源。将主电源开关拨到 ON，等待约五秒，让控制器完成自检。 四、确认自检结果。若面板显示 READY，说明设备具备启动条件；若显示 WAIT 或 FAULT，不得强行启动。 五、启动负载。按下启动键，设备先闭合预充电回路，延时两秒后闭合主回路。 六、观察运行状态。启动后三十秒内观察输入电流、输出电压和温度是否稳定，并记录首次运行结果。 注意：如果启动过程中出现异常声音、焦味或温度快速升高，应立即按下急停按钮并切断主电源。未 经授权的人员不得拆开设备外壳。\n\n依据：\n- “设备上电前，操作人员应确认输入电源、接地线和负载连接状态。确认无误后，按照以下顺序启动： 一、检查输入电压。使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。 二、检查面板状态。确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。 三、接通主电源。将主电源开关拨到 ON，等待约五秒，让控制器完成自检。 四、确认自检结果。若面板显示 READY，说明设备具备启动条件；若显示 WAIT 或 FAULT，不得强行启动。 五、启动负载。按下启动键，设备先闭合预充电回路，延时两秒后闭合主回路。 六、观察运行状态。启动后三十秒内观察输入电流、输出电压和温度是否稳定，并记录首次运行结果。 注意：如果启动过程中出现异常声音、焦味或温度快速升高，应立即按下急停按钮并切断主电源。未 经授权的人员不得拆开设备外壳。” [来源：rag-test-knowledge-document.pdf，第2页，PDF 解析问答系统 / 2. 上电与启动流程]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 2. 上电与启动流程",
+          "page_start": 2,
+          "page_end": 2
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1912,
+        "completion_tokens": 359,
+        "total_tokens": 2271,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 66821,
+        "duration_ms": 68496,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "raw_capture": "backend/tmp/v3-7/smoke-2ca71fbb/q1-capture.json",
+      "raw_capture_sha256": "3EFD609EF28B82F2CD36C51B7CE22C7FB6DE8CC730DFEEE1BEB58B4FB9A7932A",
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q2",
+      "question": "PX-200 的过流保护阈值是多少？",
+      "response": "输出电流超过 16 A 持续 100 ms 会触发过流保护。\n\n依据：\n- “输出电流超过 16 A 持续 100 ms 会触发过流保护。” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 6. 推荐问答测试集]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 6. 推荐问答测试集",
+          "page_start": 4,
+          "page_end": 4
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2396,
+        "completion_tokens": 132,
+        "total_tokens": 2528,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 40859,
+        "duration_ms": 42819,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "raw_capture": "backend/tmp/v3-7/smoke-2ca71fbb/q2-capture.json",
+      "raw_capture_sha256": "6F9FA628907A300299744A09549FEC42233EC7141FF9E1E5DDA8BEA0DC2DFEB0",
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q3",
+      "question": "过流保护后如何恢复？",
+      "response": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。\n\n依据：\n- “如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 3. 保护功能与故障处理]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 3. 保护功能与故障处理",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1910,
+        "completion_tokens": 187,
+        "total_tokens": 2097,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 52181,
+        "duration_ms": 53935,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "step_probe": {
+        "kind": "fixture_literal_probe_not_semantic_evaluation",
+        "answer_body": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。",
+        "missing_steps": [],
+        "ordered": true,
+        "matches": [
+          {
+            "step": "disconnect_load",
+            "position": 38
+          },
+          {
+            "step": "wait_discharge",
+            "position": 47
+          },
+          {
+            "step": "check_short",
+            "position": 60
+          },
+          {
+            "step": "clear_alarm",
+            "position": 72
+          },
+          {
+            "step": "restart",
+            "position": 82
+          }
+        ],
+        "human_semantic_review_required": true
+      },
+      "detailed_page_cited": true,
+      "procedure_extract": true,
+      "literal_checks_passed": true,
+      "raw_capture": "backend/tmp/v3-6/local-capture-738f84b3.json",
+      "raw_capture_sha256": "D016B200DEA100534AA67F5A8CD0F0D2D7B69BCAB0E2EEA0845C1FBBE1F11C79",
+      "reused_capture": true
+    },
+    {
+      "case_id": "Q4",
+      "question": "运行记录默认保留多久？",
+      "response": "运行记录默认保留三年，超过期限后按先进先出原则删除。\n\n依据：\n- “运行记录默认保留三年，超过期限后按先进先出原则删除。” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 6. 推荐问答测试集]\n- “运行记录保留期|3 年|超过期限后按先进先出删除” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 5. 参数速查表]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 6. 推荐问答测试集",
+          "page_start": 4,
+          "page_end": 4
+        },
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 5. 参数速查表",
+          "page_start": 4,
+          "page_end": 4
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2394,
+        "completion_tokens": 137,
+        "total_tokens": 2531,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 41588,
+        "duration_ms": 43532,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "raw_capture": "backend/tmp/v3-7/smoke-2ca71fbb/q4-capture.json",
+      "raw_capture_sha256": "7C82D207269A5E1C10953C2B82D9E982263E6672FB2B5BDE6BD7D4824B95F333",
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q5",
+      "question": "设备多久进行一次例行维护？",
+      "response": "每六个月进行一次例行维护。\n\n依据：\n- “例行维护周期为六个月。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 4. 运行记录与维护]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 4. 运行记录与维护",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2696,
+        "completion_tokens": 93,
+        "total_tokens": 2789,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 44716,
+        "duration_ms": 46768,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "raw_capture": "backend/tmp/v3-7/smoke-2ca71fbb/q5-capture.json",
+      "raw_capture_sha256": "510E8D5FDDDE50AA08656CFFB189A754EF7AE15507153CE5F83371B8957BBBC1",
+      "reused_capture": false
+    }
+  ],
+  "literal_checks_passed": true,
+  "totals_for_five_captures": {
+    "model_calls": 10,
+    "total_tokens": 12216,
+    "duration_ms": 255550,
+    "cloud_calls": 0
+  },
+  "human_semantic_review_required": true,
+  "stage": "V3-7",
+  "note": "仅当前测试 PDF 的五题本地隔离索引快照回归，不是工作台正式验收，不是 RAGAS，也不是人工审核金标准。",
+  "agent_source_review": "本代理对照保留原文核对五题：检查项/数值及时间条件/五步及前提/保留期及删除规则/维护周期均吻合；此记录不代替人工安全复核或语义评估。",
+  "debug_attempts": [
+    {
+      "raw_capture": "backend/tmp/v3-6/local-capture-58e6740c.json",
+      "raw_capture_sha256": "BFD69150D8EB1906B52E2303F134A887EB7DEC87E73FF79DFD492C356CA21B97",
+      "result": "初版分析指令误判 requires_procedure=false，仍漏前两步。保留失败，不计入最终版本通过记录。",
+      "model_calls": 2,
+      "total_tokens": 2391,
+      "cloud_calls": 0
+    },
+    {
+      "raw_capture": "backend/tmp/v3-6/local-capture-150d75de.json",
+      "raw_capture_sha256": "0ECFBBCAA1D85B54EB4EFCD30453E9B67240CCC59535F475EBCDFC80D0C7C4F6",
+      "result": "加强通用流程意图说明后选中完整原文，但正文附加简表缩写且输入重复。随后去重，并仅展示完整流程单元。",
+      "model_calls": 2,
+      "total_tokens": 3285,
+      "cloud_calls": 0
+    }
+  ],
+  "all_live_captures_in_this_stage": {
+    "model_calls": 14,
+    "total_tokens": 17892,
+    "cloud_calls": 0,
+    "judge_calls": 0
+  },
+  "protected_file_count": 67,
+  "config_formal_data_and_unrelated_app_unchanged_from_v3_6": true,
+  "remaining": [
+    "V3-8 工作台正式库回归",
+    "最终版本 Q3 连续三次稳定性",
+    "通用流程意图及段落选择仍可能误判",
+    "结构完整不等于语义步骤完整，当前评分仍未评估"
+  ]
+}

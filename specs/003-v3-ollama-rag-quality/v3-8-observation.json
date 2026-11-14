@@ -1,0 +1,600 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-03T14:14:43.218294+00:00",
+  "workbench_ui_run": false,
+  "ragas_run": false,
+  "judge_calls": 0,
+  "cases": [
+    {
+      "case_id": "Q3",
+      "question": "过流保护后如何恢复？",
+      "response": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。\n\n依据：\n- “如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 3. 保护功能与故障处理]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 3. 保护功能与故障处理",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1910,
+        "completion_tokens": 187,
+        "total_tokens": 2097,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 52163,
+        "duration_ms": 54213,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "step_probe": {
+        "kind": "fixture_literal_probe_not_semantic_evaluation",
+        "answer_body": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。",
+        "missing_steps": [],
+        "ordered": true,
+        "matches": [
+          {
+            "step": "disconnect_load",
+            "position": 38
+          },
+          {
+            "step": "wait_discharge",
+            "position": 47
+          },
+          {
+            "step": "check_short",
+            "position": 60
+          },
+          {
+            "step": "clear_alarm",
+            "position": 72
+          },
+          {
+            "step": "restart",
+            "position": 82
+          }
+        ],
+        "human_semantic_review_required": true
+      },
+      "detailed_page_cited": true,
+      "procedure_extract": true,
+      "literal_checks_passed": true,
+      "attempt": 1,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q3-1.json",
+      "raw_capture_sha256": "25AC5A07DE6EAEEDC2A46ECBEB818FCED3718531B559A42B81C41DECDA4DE331",
+      "request_id": "989a37b8-6e83-4fe2-a3ed-346dfe3d8ccd",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1035,
+      "context_tokens_after": 1035,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q3",
+      "question": "过流保护后如何恢复？",
+      "response": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。\n\n依据：\n- “如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 3. 保护功能与故障处理]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 3. 保护功能与故障处理",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1910,
+        "completion_tokens": 189,
+        "total_tokens": 2099,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 15816,
+        "duration_ms": 18070,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "step_probe": {
+        "kind": "fixture_literal_probe_not_semantic_evaluation",
+        "answer_body": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。",
+        "missing_steps": [],
+        "ordered": true,
+        "matches": [
+          {
+            "step": "disconnect_load",
+            "position": 38
+          },
+          {
+            "step": "wait_discharge",
+            "position": 47
+          },
+          {
+            "step": "check_short",
+            "position": 60
+          },
+          {
+            "step": "clear_alarm",
+            "position": 72
+          },
+          {
+            "step": "restart",
+            "position": 82
+          }
+        ],
+        "human_semantic_review_required": true
+      },
+      "detailed_page_cited": true,
+      "procedure_extract": true,
+      "literal_checks_passed": true,
+      "attempt": 2,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q3-2.json",
+      "raw_capture_sha256": "11F21B5658B45BA5087E164A0F587369FCDE155F3EFE02DA4D155B0D62AABAD5",
+      "request_id": "1ed637ad-556c-4750-b624-c55e085521cc",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1035,
+      "context_tokens_after": 1035,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q3",
+      "question": "过流保护后如何恢复？",
+      "response": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。\n\n依据：\n- “如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 3. 保护功能与故障处理]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 3. 保护功能与故障处理",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1910,
+        "completion_tokens": 189,
+        "total_tokens": 2099,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 16524,
+        "duration_ms": 18544,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "step_probe": {
+        "kind": "fixture_literal_probe_not_semantic_evaluation",
+        "answer_body": "原文流程（请核对适用条件）：\n如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。",
+        "missing_steps": [],
+        "ordered": true,
+        "matches": [
+          {
+            "step": "disconnect_load",
+            "position": 38
+          },
+          {
+            "step": "wait_discharge",
+            "position": 47
+          },
+          {
+            "step": "check_short",
+            "position": 60
+          },
+          {
+            "step": "clear_alarm",
+            "position": 72
+          },
+          {
+            "step": "restart",
+            "position": 82
+          }
+        ],
+        "human_semantic_review_required": true
+      },
+      "detailed_page_cited": true,
+      "procedure_extract": true,
+      "literal_checks_passed": true,
+      "attempt": 3,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q3-3.json",
+      "raw_capture_sha256": "265DD5C7AC98047FF9FAC991E623100900DBCD0474BA5F82A3A5A87ABA7CCA5B",
+      "request_id": "f706b2a1-8fd7-479f-9aae-92b49cf7298f",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1035,
+      "context_tokens_after": 1035,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q1",
+      "question": "设备上电前需要检查哪些内容？",
+      "response": "原文流程（请核对适用条件）：\n设备上电前，操作人员应确认输入电源、接地线和负载连接状态。确认无误后，按照以下顺序启动： 一、检查输入电压。使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。 二、检查面板状态。确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。 三、接通主电源。将主电源开关拨到 ON，等待约五秒，让控制器完成自检。 四、确认自检结果。若面板显示 READY，说明设备具备启动条件；若显示 WAIT 或 FAULT，不得强行启动。 五、启动负载。按下启动键，设备先闭合预充电回路，延时两秒后闭合主回路。 六、观察运行状态。启动后三十秒内观察输入电流、输出电压和温度是否稳定，并记录首次运行结果。 注意：如果启动过程中出现异常声音、焦味或温度快速升高，应立即按下急停按钮并切断主电源。未 经授权的人员不得拆开设备外壳。\n\n依据：\n- “设备上电前，操作人员应确认输入电源、接地线和负载连接状态。确认无误后，按照以下顺序启动： 一、检查输入电压。使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。 二、检查面板状态。确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。 三、接通主电源。将主电源开关拨到 ON，等待约五秒，让控制器完成自检。 四、确认自检结果。若面板显示 READY，说明设备具备启动条件；若显示 WAIT 或 FAULT，不得强行启动。 五、启动负载。按下启动键，设备先闭合预充电回路，延时两秒后闭合主回路。 六、观察运行状态。启动后三十秒内观察输入电流、输出电压和温度是否稳定，并记录首次运行结果。 注意：如果启动过程中出现异常声音、焦味或温度快速升高，应立即按下急停按钮并切断主电源。未 经授权的人员不得拆开设备外壳。” [来源：rag-test-knowledge-document.pdf，第2页，PDF 解析问答系统 / 2. 上电与启动流程]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 2. 上电与启动流程",
+          "page_start": 2,
+          "page_end": 2
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1912,
+        "completion_tokens": 359,
+        "total_tokens": 2271,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 53057,
+        "duration_ms": 55047,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "attempt": 1,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q1-1.json",
+      "raw_capture_sha256": "7A9D491ABCB7C7BFA185C2B87049DC56B87CD6CEBF479A2687313BAC91BEEE55",
+      "request_id": "0bdd2519-b594-45e5-ba17-f89d0a31fe5b",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1008,
+      "context_tokens_after": 1008,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q2",
+      "question": "PX-200 的过流保护阈值是多少？",
+      "response": "输出电流超过 16 A 持续 100 ms 会触发过流保护。\n\n依据：\n- “输出电流超过 16 A 持续 100 ms 会触发过流保护。” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 6. 推荐问答测试集]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 6. 推荐问答测试集",
+          "page_start": 4,
+          "page_end": 4
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2396,
+        "completion_tokens": 132,
+        "total_tokens": 2528,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 42233,
+        "duration_ms": 44438,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "attempt": 1,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q2-1.json",
+      "raw_capture_sha256": "D1A720CD090F8C88E2C75252A803742F003EFB122AF94A2213AAC9371BAEA1F6",
+      "request_id": "f7140c6d-01fa-4670-b3db-a8d5a5a8fb8e",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1654,
+      "context_tokens_after": 1654,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q4",
+      "question": "运行记录默认保留多久？",
+      "response": "运行记录默认保留三年，超过期限后按先进先出原则删除。\n\n依据：\n- “运行记录默认保留三年，超过期限后按先进先出原则删除。” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 6. 推荐问答测试集]\n- “运行记录保留期|3 年|超过期限后按先进先出删除” [来源：rag-test-knowledge-document.pdf，第4页，PDF 解析问答系统 / 5. 参数速查表]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 6. 推荐问答测试集",
+          "page_start": 4,
+          "page_end": 4
+        },
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 5. 参数速查表",
+          "page_start": 4,
+          "page_end": 4
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2394,
+        "completion_tokens": 137,
+        "total_tokens": 2531,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 44131,
+        "duration_ms": 46960,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "attempt": 1,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q4-1.json",
+      "raw_capture_sha256": "6B134AF917CAC5E8A8D2F2B3CD5C367A7C34D576CFCEA8F52400E3D28BC9C722",
+      "request_id": "667c6d74-ebb1-4d91-946d-cde5974c7972",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 1652,
+      "context_tokens_after": 1652,
+      "configured_sparse_encoder": true
+    },
+    {
+      "case_id": "Q5",
+      "question": "设备多久进行一次例行维护？",
+      "response": "每六个月进行一次例行维护。\n\n依据：\n- “例行维护周期为六个月。” [来源：rag-test-knowledge-document.pdf，第3页，PDF 解析问答系统 / 4. 运行记录与维护]",
+      "status": "completed",
+      "sources": [
+        {
+          "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+          "filename": "rag-test-knowledge-document.pdf",
+          "section_title": "PDF 解析问答系统 / 4. 运行记录与维护",
+          "page_start": 3,
+          "page_end": 3
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2696,
+        "completion_tokens": 93,
+        "total_tokens": 2789,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "query_analysis": 1,
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 46825,
+        "duration_ms": 49680,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "missing_fixture_facts": [],
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2,
+        "evidence_status": "found",
+        "citation_status": "verified",
+        "numeric_status": "not_evaluated",
+        "completeness_status": "not_evaluated",
+        "reason": "已取得检索上下文；引文状态仅表示能定位到本次原文记录，不代表事实正确、数值条件正确或步骤完整。"
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "attempt": 1,
+      "raw_capture": "backend/tmp/v3-8/snapshot-b335c0e3/q5-1.json",
+      "raw_capture_sha256": "B1BF9422E211754E9F7E61012FE4C594252771D4908E39925E2EFC13EDEC1E17",
+      "request_id": "4df7f8c8-3517-4108-9779-71b18f6c4939",
+      "source_fingerprint": "aab28ff49479b4d1be8995f59eeada4d1c86402356cff88698bee7c097254768",
+      "context_tokens_before": 2023,
+      "context_tokens_after": 2023,
+      "configured_sparse_encoder": true
+    }
+  ],
+  "q3_three_consecutive_passed": true,
+  "all_cases_passed": true,
+  "protected_hashes": {
+    "data/documents.json": "D456F8D17E0BF442DC01A6B1FAEF403DC3BA1A5B16090DA80C1F0A8CC7611A6C",
+    "data/parents.json": "2CAB940CED57632A9474B52B52423F1BFFA374960B5FC9D5ED1AFF133B138F35",
+    "data/children.json": "97040C87BE421948FFDDAC365F04F69931455C45FFE31F96C2E4C063C2634C7D",
+    "data/index/children.json": "79AD4841785EA553B0CCDCBAF0A7564FB0C0553C07590B591B932B23B0E92F9D",
+    "data/index/manifest.json": "C5DEDDE022ED7F1E8A5EF7A041B2D228A5E756F08617CE6A7A629B4D5FDE7409",
+    "backend/.env": "5C911A4C63F99FEBDC03794453192E3BE0DF22680D6D5C88AEBA4876941FF5A7",
+    "gold-cases-v1.json": "48712C8A66B4F7D5159B00BCB1E1FB84504B64B61A4B759B3089DEA62CAFB170",
+    "backend/app/config.py": "B0558DFA2EFD0E445EF6AAE8C0C6B532A78F98C44523F781DB094F994EF6618A",
+    "backend/app/dependencies.py": "FEC52B0751EC24C1BF267E6FE2702EF3FA5F2EABA85B430089467A8D55F6B6F4",
+    "backend/app/main.py": "16AF571469FC6FCF6A718142599166474BFCC5400F45DB46AB75015087DF1BD6",
+    "backend/app/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/api/auth.py": "3CBB39966A2A1252FFA210C7D2FFD07959BA35115C7BFCBB8C32283126260016",
+    "backend/app/api/chat.py": "FCE6410795B3432D5212850A3579BD8FE3B8A43B942F6638DFFE6892403F1A63",
+    "backend/app/api/debug.py": "A455400A07A19BA1C727F88D33A93931664DF29AE372B3B987C25641607C325D",
+    "backend/app/api/errors.py": "3ADFE3E1C352F15F051733EF0840248C911CE846596622664AB61A872C5FA7DF",
+    "backend/app/api/knowledge.py": "91CD1FB2E10B234624B99C4FCA53FE67F8BC83FF805A93AA0E702F59F34684A4",
+    "backend/app/api/logs.py": "1759E94BA145376010F2011616794548E7A844F27B264A0EACE00F83BFB2AC6B",
+    "backend/app/api/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/auth/security.py": "6D31E6093A0FB56E0B01AA3688B8694631C49FC3C5ACDE865EA7B05977BF88AD",
+    "backend/app/auth/service.py": "0C1299015BD9D0E12D3B4CA413919A659E96E3635122281EF5B6D069AA734996",
+    "backend/app/auth/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/knowledge/chunker.py": "79EF26DD451CFE7C43DBB7C152DD8EF24A0B88EF090E628389DDA076006342DE",
+    "backend/app/knowledge/manager.py": "25D3F056A0F4F8EBFE0DA3F8BA54A996346DF0D07A0AA179E73190E7FF6B51CE",
+    "backend/app/knowledge/models.py": "67923F5B4FE9C9F06F2CC3A610805342A9024901863F308DB17F5792399E884C",
+    "backend/app/knowledge/pdf_parser.py": "DE033FC627462B26F478197692959D6D45106141130075F87A689DE8D46C084F",
+    "backend/app/knowledge/stores.py": "35ADFD74FE33FF0E4B76F04FBBE7D515369A1C9913D39181A46E60D1970E1BA0",
+    "backend/app/knowledge/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/observability/events.py": "23DA082EC77900F0C1D103374BA2BFB72272F50212CE67415B8B6EFA3F18C289",
+    "backend/app/observability/execution.py": "6AB7C818ACBD60F12096111BCE8C0C9FF7A1B6B3D89C7D0752685AE0B2239FE6",
+    "backend/app/observability/logger.py": "DCCCE6A60B8FA77C2CBCE01F41754D37069E3C4ADC38F9E3E4B5E64889A2B7C7",
+    "backend/app/observability/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/rag/context_builder.py": "88C7CC0E34F91259791FB3F6A5C0B0727A7D3EF9A416A75C4549C761420F0089",
+    "backend/app/rag/context_compression.py": "915BB89BC1C7A577DCF5A5B7BD4BF5B9A2AA71CA48B65157E3D215717C02350C",
+    "backend/app/rag/conversation_memory.py": "3FCA07849D46C21155DDD29DF6ECD754CAEC527BF1C5D2C0A105B5233465412B",
+    "backend/app/rag/conversation_summary.py": "1B25F3F13AA93E5735A9B70179E76C06AA55E5E0855C3AB929B11BBBB9A2EEE9",
+    "backend/app/rag/cost_control.py": "8FDA923599745B9176943690E730F9665AF01834A9FA5EDE85657DB82B94E152",
+    "backend/app/rag/embeddings.py": "E0863743A1217ACBEDE1C0FB6285F6E7CF833623D021D2E5313CBD7C9777402E",
+    "backend/app/rag/evaluator.py": "09AF0302395C0305EA0E63298879F667A4EBA9328FE172EE44F4C5BBA72E91C2",
+    "backend/app/rag/evidence.py": "E03F87D7D84DD4D3CC8ACE18C7E17901D40B567938F9973F17D25EF50A6D8D7E",
+    "backend/app/rag/generator.py": "3AEF3D0247D947B8BAC260B6EA9EA193B42212009B695FD8A488F9E676C37D2D",
+    "backend/app/rag/graph.py": "EE6AD6294A8135E03A2F04CBD9D4E08782A0B87D4BDFD3A38A6C9FF7C20EDD49",
+    "backend/app/rag/graph_state.py": "82CE6D0B92EA2A78ECC7CD25D332182EA82126B19D81650DD3D5A3A167C424B2",
+    "backend/app/rag/index_store.py": "9F76074AA748C361CD84709B33832FEBFA167B5BB95B0B3CD1E44ED88BC95E72",
+    "backend/app/rag/model_compression.py": "3DA31222FB8D1E53BBD4B3117EE5B0F67EBD768904BAFF9CC93DCF5F178F9043",
+    "backend/app/rag/model_provider.py": "9B52531B8DB9F67115DF008285A0271D4CE871EEB7C43E9A25A14EDE80721EE7",
+    "backend/app/rag/model_schema.py": "E3CF18D27AA51D85892B4248E9E0C2C8C573401E27A46A5DFA2DE9DAFE55D7B8",
+    "backend/app/rag/nodes.py": "3899F656FB420B51141E7E8F7E4BFCCD2A7CC235398527C6BDD79DD7EDB3248F",
+    "backend/app/rag/pipeline.py": "BB81A212E664B55C85D5294A900F5B48BFFC79A141B49FF8ECE61BBDDC521EAB",
+    "backend/app/rag/procedure_evidence.py": "4C30F43A875B077C40A6DC26625FF7496639917ECF4FD62B349E0A5A2BB122B8",
+    "backend/app/rag/query_analysis.py": "6A140EABA520D64D858CB9BCF7C56ED9FC5B268F39786F4E65D4C286B28FC821",
+    "backend/app/rag/query_planner.py": "4C59AE352824A90A78E338530EFAEB0A2B6A6199E4E95FF317393A215F922250",
+    "backend/app/rag/retriever.py": "786EEF21ECFF9CB2B0AF71B1941F616654A8B38FE31560BCF979A8ED554079E6",
+    "backend/app/rag/sparse_embeddings.py": "75394BF179A99B2E1906ED32D78C73845D7BD66E4957070221AEF619AEAFBF7C",
+    "backend/app/rag/tools.py": "A7DAE2AD65D907108D644BBDF435F1650533ED0EB604BD4217424379D4E29330",
+    "backend/app/rag/vector_db_manager.py": "66ACC4F327C8B04B3D2A687B02B1B3B2D4120B37B8E587AD5DDFFB2067FA5B68",
+    "backend/app/rag/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "backend/app/schemas/auth.py": "D303F70082C1BC9E54C1F5A3318FBE4B7A988344AC8B97F9EC34FA206E8E00CE",
+    "backend/app/schemas/chat.py": "DE8069AE6D61725556FCC5D1C80D38F8D01FBA68E0C30A644EA4A09362BB24C0",
+    "backend/app/schemas/common.py": "C62D53B4FCC12444E8B448AA0A5C697D25EDC0833EE131F373EC63D9EC3B6B79",
+    "backend/app/schemas/documents.py": "AC1EE7005F8F2709D75F13A5451101451FF6BA69FE7E815CA8C57DD0DA42DC13",
+    "backend/app/schemas/errors.py": "9CFB3E96F9B8C94BD5E37C88AE8C74FE4B908B7E69CBBBD191B3F4E98B216444",
+    "backend/app/schemas/logs.py": "F4C8F0B53D9EB0B30694FE8DAA7C707E35D846AE8E0462D55B5330D5844359C3",
+    "backend/app/schemas/__init__.py": "01BA4719C80B6FE911B091A7C05124B64EEECE964E09C058EF8F9805DACA546B",
+    "source/b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+    "markdown/b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b": "8D287568CA4ECE8843568B71012084B2019018ED7F0144D4B51075A22456F6CF",
+    "qdrant/meta.json": "32687621FD8C513406BB8551150A06DD9D81B02CFCEC4D0B51015959D8528FED",
+    "qdrant/collection/document_child_chunks/storage.sqlite": "8A2449A5AA96A113426ED2E695711A49740A7B26F88A21015E48ACFC5C8913CF"
+  },
+  "totals": {
+    "model_calls": 14,
+    "total_tokens": 16414,
+    "duration_ms": 286952,
+    "cloud_calls": 0
+  },
+  "human_semantic_review_required": true,
+  "stage": "V3-8",
+  "stage_complete": true,
+  "completed_date": "2026-10-07",
+  "workbench_validation": {
+    "status": "passed",
+    "reason": "2026-10-07 用户自行登录后，通过 UI 完成正式库五题验收；67 个保护指纹与同版本隔离回归一致。历史 INVALID_TOKEN 及资源失败保留在报告，不将隔离捕获冒充正式 UI 捕获。",
+    "ui_url": "http://127.0.0.1:5173/#/chat",
+    "screenshot": "backend/tmp/v3-8/workbench-q3-body-2026-10-07.jpg",
+    "observation": "specs/003-v3-ollama-rag-quality/v3-8-workbench-observation.json",
+    "passed_cases": 5,
+    "model_calls": 10,
+    "total_tokens": 12216,
+    "duration_ms": 248995,
+    "cloud_calls": 0,
+    "backend_port": 8000,
+    "frontend_port": 5173
+  },
+  "setup_observation": "specs/003-v3-ollama-rag-quality/v3-8-setup-observation.json",
+  "initial_setup_usage_included": false,
+  "agent_review": "本代理对照保留原文核对三次 Q3 五步及适用前提，其他四题事实和数值条件吻合；这不代替人工金标准审核、语义评分或工作台正式验收。",
+  "backend_tests": {
+    "passed": 295,
+    "seconds": 79.96
+  },
+  "frontend_tests": {
+    "passed": 20
+  },
+  "frontend_build": "passed"
+}
