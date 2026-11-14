@@ -38,5 +38,5 @@ def create_agent_graph(llm, tools_list):
     graph_builder.add_edge(['agent'], 'aggregate_answers')
     graph_builder.add_edge('aggregate_answers', END)
     agent_graph = graph_builder.compile(checkpointer=checkpointer, interrupt_before=['request_clarification'])
-    print('✓ Agent graph compiled successfully.')
+    print('Agent graph compiled successfully.')
     return agent_graph
