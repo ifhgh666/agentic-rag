@@ -1,8 +1,10 @@
 # 当前失败问题清单
 
+归档说明：下列规格、报告和原始捕获保存在本地 `specs/`、`output/`，不包含在新克隆的仓库中。路径以仓库根目录为基准，仅用于本地查阅；本次只调整引用方式，历史失败、原始答复与验收结论保持。
+
 最后更新：2026-10-09。范围：005模型驱动Agent Loop在C阶段的两次真实平台测试。
 
-**当前有2项未通过验收的问题。用户恢复C后，第一题复验仍失败；第二题按失败暂停规则未运行。** 已有运行均未取得可用于场景验收的最终答案。对应待办为[T018](specs/005-model-driven-agent-loop/tasks.md)，最新结果见[C阶段复验报告](specs/005-model-driven-agent-loop/phase-c-recheck-20261009-report.md)，报告后继续暂停在C阶段。
+**当前有2项未通过验收的问题。用户恢复C后，第一题复验仍失败；第二题按失败暂停规则未运行。** 已有运行均未取得可用于场景验收的最终答案。对应待办为T018（本地归档：`specs/005-model-driven-agent-loop/tasks.md`），最新结果见C阶段复验报告（本地归档：`specs/005-model-driven-agent-loop/phase-c-recheck-20261009-report.md`），报告后继续暂停在C阶段。
 
 ## 总览
 
@@ -32,7 +34,7 @@
 
 已加强通用分析提示，要求逐字保留题设中的型号、数字与单位，保留原有约束校验。仍需用原题确认`245 V`与`400 ms`不会被误改；对象不明确时应正常澄清，能确定对象时再核验保护、恢复结论及引用。现有证据尚不能证明该原题已正确回答。
 
-证据：[原始平台记录](output/loop005-phase-c-platform-20261009.json)、[阶段C报告](specs/005-model-driven-agent-loop/phase-c-report.md)。完整本地诊断的位置及指纹保存在原始记录的`local_trace`和`local_trace_sha256`字段。
+证据：原始平台记录（本地归档：`output/loop005-phase-c-platform-20261009.json`）、阶段C报告（本地归档：`specs/005-model-driven-agent-loop/phase-c-report.md`）。完整本地诊断的位置及指纹保存在原始记录的`local_trace`和`local_trace_sha256`字段。
 
 ### 2026-10-09原题复验：仍失败
 
@@ -40,7 +42,7 @@
 - 分析问题再次包含“持续 40或 ms”，仍以constraint_mismatch结束；未检索、未产生答案。
 - 端到端32.644秒，模型调用1次、工具0次、云调用0次；Token为822输入、77输出。
 - 知识库11个文件指纹未变。复验没有放行错误数字或注入标准答案。
-- 状态：**真实复验失败，问题未解决**。记录：[本轮采集](output/loop005-phase-c-recheck-20261009-Q16.json)。
+- 状态：**真实复验失败，问题未解决**。记录：本轮采集（本地归档：`output/loop005-phase-c-recheck-20261009-Q16.json`）。
 
 ## C-FAIL-002：检索后超时，耗时突破旧上限
 
@@ -65,7 +67,7 @@
 
 最新后端425项自动化检查通过；这些结果验证工程逻辑。仍需真实运行确认平台能按期限结束，并核验正常返回时是否依据文档的电压阈值和持续时间作出正确判断。现有证据不足以确定全部32.7分钟的唯一原因，也不能证明真实答题质量已通过。
 
-证据：[原始平台记录](output/loop005-phase-c-scenario-20261009.json)、[超时修复补充报告](specs/005-model-driven-agent-loop/timeout-300s-report.md)。完整本地诊断的位置及指纹保存在原始记录的`local_trace`和`local_trace_sha256`字段。
+证据：原始平台记录（本地归档：`output/loop005-phase-c-scenario-20261009.json`）、超时修复补充报告（本地归档：`specs/005-model-driven-agent-loop/timeout-300s-report.md`）。完整本地诊断的位置及指纹保存在原始记录的`local_trace`和`local_trace_sha256`字段。
 
 ### 本轮状态：未复验
 
@@ -86,6 +88,6 @@
 - 本次入口第一问保留`245 V / 400 ms`，最终答案依据`高于242 V持续300 ms`正确判定过压，恢复核心结论为电压恢复正常后等待30秒自动恢复。
 - 但恢复子问仅为“之后如何恢复？”，未包含共同条件及独立对象，入口人工验收`failed`；完整答案`not_verified`，引文卡`issue_found`、页码未知。数值比较正确不代表所有答题与引用要求通过。
 - 顺序失败后停止，C-UV和比较题均未提交，C-UV的旧timeout没有新的真实复验。005 T018仍未完成，006 T034仍未完成，不启动005 D或30题。
-- 新证据：[首次原始记录](output/query-rewrite-v1/e2e-first-20261011-01/Q16.raw.json)、[人工依据](output/query-rewrite-v1/e2e-first-20261011-01/Q16.review.json)、[批次汇总](output/query-rewrite-v1/e2e-first-20261011-01/summary.json)、[F首次真实报告](specs/006-query-rewrite-split/phase-f-first-20261011-report.md)。
+- 新证据：首次原始记录（本地归档：`output/query-rewrite-v1/e2e-first-20261011-01/Q16.raw.json`）、人工依据（本地归档：`output/query-rewrite-v1/e2e-first-20261011-01/Q16.review.json`）、批次汇总（本地归档：`output/query-rewrite-v1/e2e-first-20261011-01/summary.json`）、F首次真实报告（本地归档：`specs/006-query-rewrite-split/phase-f-first-20261011-report.md`）。
 
 当前结论：Q16本次数字保留与核心推导有改善，但完整验收未通过；C-UV仍待真实复验。报告后暂停，等待用户验收。

@@ -166,8 +166,7 @@ agentic-rag/
 │   ├── scripts/        # 冒烟验证与索引维护
 │   └── tests/          # 单元、集成、契约与安全测试
 ├── frontend/src/       # 登录、问答台与知识库
-├── docs/               # 架构、运行指南与开发进度
-└── specs/              # 功能规格与阶段报告
+└── docs/               # 架构、运行指南与开发进度
 ```
 
 ## 快速开始
@@ -202,7 +201,9 @@ python start.py
 
 - [架构与源码导航](docs/repository-guide.md) · 主图、检索、会话状态及公开事件
 - [测试与运行操作](docs/testing-and-operations.md) · 回归命令、配置与索引维护
-- [真实前后端联调记录](specs/017-frontend-nova-workspace/phase-e-report.md) · 上传、问答、来源与退出
 - [当前进度](docs/CURRENT_STATUS.md) · 阶段交接、已知失败与历史记录
+- [编码代理开发流程](docs/agent-workflow.md) · 本地开发资料与阶段交接
+
+`specs/`（功能规格、计划与阶段报告）和 `.specify/`（Spec Kit 配置、模板与脚本）作为本地开发资料保留，由 Git 忽略，不包含在新克隆的仓库中。运行应用无需这两个目录；恢复历史开发或评测前，需要另行准备对应的本地归档，详见开发流程与测试指南。
 
 当前版本面向单管理员与文本型 PDF。扫描件需要先转成含文本层的 PDF。会话历史、摘要与待补充状态保存在进程内，重启后清空。

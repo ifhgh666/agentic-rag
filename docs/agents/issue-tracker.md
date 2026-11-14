@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Shared issues and requirements for this repo live as GitHub issues. Spec Kit specifications, plans, tasks, and reports stay in the untracked local development archive described in [the agent workflow](../agent-workflow.md). Use the `gh` CLI for GitHub issue operations.
 
 ## Conventions
 

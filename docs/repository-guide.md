@@ -13,7 +13,9 @@
 
 ## 2. 仓库路径地图
 
-先根据任务定位模块，再读必要文件；搜索优先 `rg` / `rg --files`。当前正常在线采用 [016 参考执行语义](../specs/016-reference-agent-semantics/plan.md)，保留 015 建立的职责目录：`backend/app/rag/` 放八个 Agent 核心文件，`core/` 放模型、会话、交付及独立旧能力，`knowledge/` 放知识基础设施。015/014/011 的报告保留对应日期的事实，不能覆盖 016 的当前调用链。当前静态结构与源码位置见 [框架审阅](../specs/016-reference-agent-semantics/phase-framework-review-20261028-report.md)。
+先根据任务定位模块，再读必要文件；搜索优先 `rg` / `rg --files`。当前正常在线采用 LangGraph 主图与研究子图，装配见 [rag/graph.py](../backend/app/rag/graph.py)。职责目录为：`backend/app/rag/` 放八个 Agent 核心文件，`core/` 放模型、会话、交付及独立旧能力，`knowledge/` 放知识基础设施。历史报告保留对应日期的事实，不能覆盖当前调用链。
+
+详细规格、契约和阶段报告保存在本地 `specs/`，Spec Kit 工作流资料在本地 `.specify/`；两者均不纳入 Git。公开仓库的源码导航以本文与实际代码为准，恢复历史开发所需资料见 [开发流程](agent-workflow.md)。
 
 | 变更领域 | 优先核对的路径 |
 |---|---|
@@ -28,17 +30,17 @@
 | 公开交付、来源、日志和 API/SSE | `backend/app/core/pipeline.py` 的 RagPipeline；reference_observation.py 的被动观测；observability/ 与 api/chat.py 的诊断和传输 |
 | 独立旧分析/生成/治理/会话能力 | `backend/app/core/query_analysis.py`、answering.py、model_call.py、model_provider.py、conversation.py、legacy_*.py；不接正常参考图 |
 | 前端接口、待办、答案和过程面板 | `frontend/src/api/`、`frontend/src/types/api.ts`、`frontend/src/pages/Chat.tsx`、`frontend/src/components/ProcessPanel.tsx`；旧核验类型保留不代表正常在线发核验事件 |
-| 验证、运行记录、需求 | `backend/tests/`、`backend/scripts/`、`frontend/src/**/*.test.*`、`specs/`、`output/` |
+| 验证与辅助脚本 | `backend/tests/`、`backend/scripts/`、`frontend/src/**/*.test.*`；本地归档另存于 `specs/`、`output/` |
 
 ### 正常在线装配与调用链
 
 `main.build_services` 装配 `RagPipeline(AgentGraphService(settings, retriever, documents), logger, diagnostics)`。HTTP 入口把动作与问题交给 pipeline；pipeline 只投影事件/可见答案/来源/用量，会话模块负责动作、锁和 checkpoint，实际语义节点与路由在 rag。正常参考图直接使用原生模型，不经 ModelCallRunner、旧 QueryAnalyzer/AnswerGenerator 或旧 ConversationMemory。
 
-主图由 `create_agent_graph(llm, tools_list)` 构造。新消息先经过 select_tool，整理历史后进入 answer_direct 或 rewrite_query。改写后澄清暂停或 Send 分支研究，再经 aggregate_answers 统一聚合。研究子图显式包含 orchestrator、tools、should_compress_context、compress_context、fallback_response、collect_answer；工具之后检查容量，必要时模型压缩后继续研究。模型决定请求工具或作答，程序按图和工具契约执行。见 [018 聊天分流契约](../specs/018-tool-routing/contracts/chat-routing.md)。
+主图由 `create_agent_graph(llm, tools_list)` 构造。新消息先经过 select_tool，整理历史后进入 answer_direct 或 rewrite_query。改写后澄清暂停或 Send 分支研究，再经 aggregate_answers 统一聚合。研究子图显式包含 orchestrator、tools、should_compress_context、compress_context、fallback_response、collect_answer；工具之后检查容量，必要时模型压缩后继续研究。模型决定请求工具或作答，程序按图和工具契约执行。分流节点见 [rag/nodes.py](../backend/app/rag/nodes.py)，条件路由见 [rag/edges.py](../backend/app/rag/edges.py)。
 
-每分支保留 8 个工具请求、10 次研究迭代，图递归 50、近期消息 4、压缩阈值 2000/0.9，以 `rag/graph_state.py` 为准。旧 8/12 总模型配额、300/120 秒应用截止及旧输入准入退出正常路径；不承诺替代墙钟上限。兼容模型入口显式 function_calling，Ollama 沿用当前 SDK 默认；精确 deepseek-flash 的正常实例默认关闭思考，见 [传输契约](../specs/016-reference-agent-semantics/contracts/model-transport.md)。
+每分支保留 8 个工具请求、10 次研究迭代，图递归 50、近期消息 4、压缩阈值 2000/0.9，以 `rag/graph_state.py` 为准。旧 8/12 总模型配额、300/120 秒应用截止及旧输入准入退出正常路径；不承诺替代墙钟上限。兼容模型入口显式 function_calling，Ollama 沿用当前 SDK 默认；精确 deepseek-flash 的正常实例默认关闭思考，见 [core/reference_model.py](../backend/app/core/reference_model.py)。
 
-checkpoint 保存在线历史、摘要与 pending，auto/continue 直接恢复检索改写，new/cancel 清理待办；会话在进程内，重启会丢失。直接回答与最终聚合正文进入 answer，直接回答的来源为空。用量只统计，model_call_limit=null。既有消息与动作见 [聊天契约](../specs/016-reference-agent-semantics/contracts/chat.md)。
+checkpoint 保存在线历史、摘要与 pending，auto/continue 直接恢复检索改写，new/cancel 清理待办；会话在进程内，重启会丢失。直接回答与最终聚合正文进入 answer，直接回答的来源为空。用量只统计，model_call_limit=null。既有消息与动作见 [api/chat.py](../backend/app/api/chat.py) 和 [core/reference_session.py](../backend/app/core/reference_session.py)。
 
 ```mermaid
 flowchart TD
@@ -63,7 +65,7 @@ flowchart TD
 
 ### 独立旧能力与历史资料
 
-`core/model_call.py` 的 ModelCallRunner/ModelCallBudget、`model_provider.py` 的旧协议、query_analysis.py、answering.py、conversation.py、legacy_rag.py 和 legacy_* 冻结依赖仍供独立旧消费方使用；`knowledge/retrieval.py` 的 ContextBuilder 也保留。它们的 owner/lease、额度/期限、旧分析和核验约定按原调用路径及 [011 规格](../specs/011-model-call-governance/spec.md)核对，不应用于正常参考图。
+`core/model_call.py` 的 ModelCallRunner/ModelCallBudget、`model_provider.py` 的旧协议、query_analysis.py、answering.py、conversation.py、legacy_rag.py 和 legacy_* 冻结依赖仍供独立旧消费方使用；`knowledge/retrieval.py` 的 ContextBuilder 也保留。它们的 owner/lease、额度/期限、旧分析和核验约定按原调用路径及可用的本地历史规格核对，不应用于正常参考图。
 
 012 的 `_build_model_subgraph`、兼容属性说明及 015 迁移报告属于各自历史版本，不能据此假定当前 AgentGraphService 仍公开旧 builder、query_generator 或 evidence_selector。修改独立旧能力时先查当前调用方和保存的契约，不按“未接主图”批量删除模块，也不把旧机制接回新图。
 
