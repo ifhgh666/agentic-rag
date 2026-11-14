@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-03T13:30:30.846614+00:00",
+  "workbench_ui_run": false,
+  "ragas_run": false,
+  "judge_calls": 0,
+  "cases": [
+    {
+      "case_id": "Q1",
+      "status": "completed",
+      "usage": {
+        "prompt_tokens": 1912,
+        "completion_tokens": 359,
+        "total_tokens": 2271,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 66821,
+        "duration_ms": 68496,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q2",
+      "status": "completed",
+      "usage": {
+        "prompt_tokens": 2396,
+        "completion_tokens": 132,
+        "total_tokens": 2528,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 40859,
+        "duration_ms": 42819,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q3",
+      "status": "completed",
+      "usage": {
+        "prompt_tokens": 1910,
+        "completion_tokens": 187,
+        "total_tokens": 2097,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 52181,
+        "duration_ms": 53935,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2
+      },
+      "human_semantic_review_required": true,
+      "step_probe": {
+        "kind": "fixture_literal_probe_not_semantic_evaluation",
+        "ordered": true,
+        "matches": [
+          {
+            "position": 38
+          },
+          {
+            "position": 47
+          },
+          {
+            "position": 60
+          },
+          {
+            "position": 72
+          },
+          {
+            "position": 82
+          }
+        ],
+        "human_semantic_review_required": true
+      },
+      "detailed_page_cited": true,
+      "procedure_extract": true,
+      "literal_checks_passed": true,
+      "reused_capture": true
+    },
+    {
+      "case_id": "Q4",
+      "status": "completed",
+      "usage": {
+        "prompt_tokens": 2394,
+        "completion_tokens": 137,
+        "total_tokens": 2531,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 41588,
+        "duration_ms": 43532,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "reused_capture": false
+    },
+    {
+      "case_id": "Q5",
+      "status": "completed",
+      "usage": {
+        "prompt_tokens": 2696,
+        "completion_tokens": 93,
+        "total_tokens": 2789,
+        "usage_source": "provider",
+        "model_calls": 2,
+        "model_call_limit": 2,
+        "calls_by_node": {
+          "collect_answer": 1
+        },
+        "cache_hits": {
+          "request_tool": 1
+        },
+        "cache_hit_count": 1,
+        "model_duration_ms": 44716,
+        "duration_ms": 46768,
+        "budget_exceeded": false,
+        "cloud_calls": 0
+      },
+      "kind": "fixture_literal_checks_not_ragas_or_semantic_judge",
+      "verification": {
+        "schema_version": 2
+      },
+      "human_semantic_review_required": true,
+      "literal_checks_passed": true,
+      "reused_capture": false
+    }
+  ],
+  "literal_checks_passed": true,
+  "totals_for_five_captures": {
+    "model_calls": 10,
+    "total_tokens": 12216,
+    "duration_ms": 255550,
+    "cloud_calls": 0
+  },
+  "human_semantic_review_required": true,
+  "stage": "V3-7",
+  "debug_attempts": [
+    {
+      "model_calls": 2,
+      "total_tokens": 2391,
+      "cloud_calls": 0
+    },
+    {
+      "model_calls": 2,
+      "total_tokens": 3285,
+      "cloud_calls": 0
+    }
+  ],
+  "all_live_captures_in_this_stage": {
+    "model_calls": 14,
+    "total_tokens": 17892,
+    "cloud_calls": 0,
+    "judge_calls": 0
+  },
+  "protected_file_count": 67,
+  "config_formal_data_and_unrelated_app_unchanged_from_v3_6": true,
+  "public_record_notice": "真实运行原文已移出公开仓库；历史统计与通过/失败结论保留。"
+}

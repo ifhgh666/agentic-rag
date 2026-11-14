@@ -1,9 +1,9 @@
 from uuid import uuid4
 
 from app.knowledge.stores import DocumentStore
-from app.rag.embeddings import EmbeddingService
-from app.rag.index_store import IndexStore
-from app.rag.retriever import Retriever
+from app.knowledge.embeddings import EmbeddingService
+from app.knowledge.index import IndexStore
+from app.knowledge.retrieval import Retriever
 from app.schemas.common import utc_now
 from app.schemas.documents import DocumentStatus, KnowledgeDocument, SearchableChildUnit
 

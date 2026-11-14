@@ -1,0 +1,98 @@
+{
+  "dataset_version": "draft-0.1",
+  "status": "draft_not_for_formal_scoring",
+  "source_document": {
+    "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+    "filename": "rag-test-knowledge-document.pdf",
+    "sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+    "page_count": 4,
+    "document_version": "RAG-TEST-001 / 1.0"
+  },
+  "cases": [
+    {
+      "case_id": "Q1",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "case_type": "answerable",
+      "question": "设备上电前需要检查哪些内容？",
+      "reference_answer": "确认输入电源、接地线和负载连接正常；用合格万用表核对输入电压在 198 V 至 242 V、频率在 49 Hz 至 51 Hz；确认急停按钮已复位、保护指示灯熄灭且面板没有故障代码。",
+      "source_spans": [
+        { "page": 2, "section": "2. 上电与启动流程", "source_quote": "设备上电前，操作人员应确认输入电源、接地线和负载连接状态。" },
+        { "page": 2, "section": "2. 上电与启动流程", "source_quote": "输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。" },
+        { "page": 2, "section": "2. 上电与启动流程", "source_quote": "确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。" }
+      ],
+      "required_facts": ["输入电源、接地线、负载连接", "198 V 至 242 V", "49 Hz 至 51 Hz", "急停按钮复位", "保护指示灯熄灭", "无面板故障代码"],
+      "forbidden_claims": ["在 WAIT 或 FAULT 状态下强行启动"],
+      "expected_behavior": "answer",
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q2",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "case_type": "answerable",
+      "question": "PX-200 的过流保护阈值是多少？",
+      "reference_answer": "PX-200 的输出电流超过 16 A 并持续 100 ms 时触发过流保护，控制器立即断开主回路。",
+      "source_spans": [
+        { "page": 3, "section": "3. 保护功能与故障处理", "source_quote": "输出电流超过 16 A 持续 100 ms" }
+      ],
+      "required_facts": ["输出电流超过 16 A", "持续 100 ms"],
+      "forbidden_claims": ["达到 16 A 即必然触发", "无需持续时间"],
+      "expected_behavior": "answer",
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q3",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "case_type": "answerable",
+      "question": "过流保护后如何恢复？",
+      "reference_answer": "若故障代码为 OC-16，应先断开负载，等待设备完全放电，再检查负载端是否短路；确认负载正常后按确认键清除告警，最后重新执行上电流程。不得在保护原因未排除前连续重启或旁路保护回路。",
+      "source_spans": [
+        { "page": 3, "section": "3. 保护功能与故障处理 / 故障排查建议", "source_quote": "应先断开负载，等待设备完全放电，再检查负载端是否短路。" },
+        { "page": 3, "section": "3. 保护功能与故障处理 / 故障排查建议", "source_quote": "确认负载正常后，按确认键清除告警，最后重新执行上电流程。" },
+        { "page": 3, "section": "3. 保护功能与故障处理 / 故障排查建议", "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。" }
+      ],
+      "required_facts": ["先断开负载", "等待设备完全放电", "检查负载端是否短路", "确认负载正常", "按确认键清除告警", "重新执行上电流程", "上述步骤顺序不可颠倒"],
+      "forbidden_claims": ["未断开负载或未放电就直接检查/重启", "跳过故障原因排查", "旁路保护回路"],
+      "expected_behavior": "answer",
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": "第 4 页推荐问答表只有简化恢复说明，省略了第 3 页正文的断开负载与完全放电；正式标准答案以第 3 页完整故障处理流程为准。"
+    },
+    {
+      "case_id": "Q4",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "case_type": "answerable",
+      "question": "运行记录默认保留多久？",
+      "reference_answer": "运行记录默认保留三年；超过期限后按先进先出原则删除。",
+      "source_spans": [
+        { "page": 3, "section": "4. 运行记录与维护", "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。" }
+      ],
+      "required_facts": ["三年", "超过期限后按先进先出原则删除"],
+      "forbidden_claims": ["永久保存"],
+      "expected_behavior": "answer",
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q5",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "case_type": "answerable",
+      "question": "设备多久进行一次例行维护？",
+      "reference_answer": "PX-200 每六个月进行一次例行维护。",
+      "source_spans": [
+        { "page": 3, "section": "4. 运行记录与维护", "source_quote": "例行维护周期为六个月。" }
+      ],
+      "required_facts": ["每六个月"],
+      "forbidden_claims": ["每年一次"],
+      "expected_behavior": "answer",
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    }
+  ]
+}

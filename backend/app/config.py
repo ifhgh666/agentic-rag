@@ -2,6 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,14 +31,18 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.0
     llm_seed: int = 42
     llm_timeout_seconds: float = 120.0
-    llm_max_output_tokens: int = 512
-    max_llm_calls_per_request: int = 4
-    max_simple_llm_calls: int = 2
+    llm_max_output_tokens: int = 768
+    max_llm_calls_per_request: int = 12
+    max_simple_llm_calls: int = 8
+    model_context_window: int = 4096
+    model_context_safety_tokens: int = 256
+    agent_loop_protocol: Literal["native", "structured"] = "native"
+    request_timeout_seconds: float = Field(default=300.0, gt=0, le=300)
     max_query_analysis_calls: int = 1
     max_query_rewrite_calls: int = 1
-    max_compression_calls: int = 1
     max_answer_calls: int = 1
-    max_context_tokens: int = 4000
+    max_summary_calls: int = 1
+    max_context_tokens: int = 3072
     rag_cache_ttl_seconds: int = 300
     rag_cache_max_entries: int = 256
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -55,11 +60,13 @@ class Settings(BaseSettings):
     sparse_vector_name: str = "sparse"
     retrieval_top_k: int = 7
     retrieval_min_score: float = 0.4
-    max_tool_calls: int = 8
+    max_tool_calls: int = 16
     max_iterations: int = 10
-    graph_recursion_limit: int = 50
+    graph_recursion_limit: int = 80
+    # Legacy parsing compatibility only; current Parent reads are model tool actions.
     agent_parent_threshold_chars: int = 240
     main_history_messages_to_keep: int = 4
+    main_history_input_token_limit: int = 4000
     execution_logging_enabled: bool = True
     execution_log_max_chars: int = 1200
     base_token_threshold: int = 2000

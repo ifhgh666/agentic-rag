@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from app.rag.embeddings import EmbeddingService
+from app.knowledge.embeddings import EmbeddingService
 
 
 def test_embedding_is_normalized_and_repeatable(settings):

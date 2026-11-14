@@ -6,19 +6,16 @@ import argparse
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from uuid import uuid4
-
 from app.config import Settings
 from app.knowledge.chunker import chunk_document
 from app.knowledge.pdf_parser import PdfParser
 from app.knowledge.stores import DocumentStore
-from app.rag.context_builder import ContextBuilder
-from app.rag.embeddings import EmbeddingService
-from app.rag.evaluator import AnswerEvaluator
-from app.rag.generator import AnswerGenerator
+from app.knowledge.retrieval import ContextBuilder, Retriever
+from app.knowledge.embeddings import EmbeddingService
+from app.core.answering import AnswerEvaluator, AnswerGenerator
 from app.rag.graph import AgentGraphService
-from app.rag.index_store import IndexStore
-from app.rag.model_provider import create_provider
-from app.rag.retriever import Retriever
+from app.knowledge.index import IndexStore
+from app.core.model_provider import create_provider
 from app.schemas.common import utc_now
 from app.schemas.documents import DocumentStatus, KnowledgeDocument
 
@@ -98,7 +95,6 @@ def main(only: str | None = None, threshold: int | None = None) -> dict:
                     "sources": [item.filename for item in result.sources],
                     "model_calls": [{"node": item.get("node"), "validation_status": item.get("validation_status")} for item in result.model_trace],
                     "retrieved_count": len(result.retrieved_results),
-                    "context_tokens": result.context_tokens_after,
                     "context_facts": {pattern: bool(re.search(pattern, result.context, re.IGNORECASE)) for pattern in patterns},
                     "usage": result.usage,
                     "raw_model_response_if_failed": capture.last_content[:3000] if missing or result.status != "completed" else "",

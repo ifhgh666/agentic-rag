@@ -1,0 +1,934 @@
+{
+  "schema_version": 1,
+  "dataset_version": "candidate-2.0",
+  "status": "draft_not_for_formal_scoring",
+  "source_document": {
+    "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+    "filename": "rag-test-knowledge-document.pdf",
+    "sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+    "page_count": 4,
+    "document_version": "RAG-TEST-001 / 1.0"
+  },
+  "scope": "题集校准伴随量规；不被当前采集器或 RAGAS 自动读取，不是业务规则代码，不是已执行评分。候选内容仍须人工审核。",
+  "review": {
+    "status": "pending",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  "interpretation": {
+    "core_fact_policy": "required_facts 只描述题干直接要求的事实；行为条件另列。以语义覆盖判断，不要求逐字复述。任何肯定的可选补充也必须被原文支持，选答不是允许编造。",
+    "optional_fact_policy": "optional_facts 有原文定位；不答不扣完整性，答错仍标事实错误。安全恢复的必要前置和顺序不可移为可选。",
+    "equivalent_expression_policy": [
+      "忽略排版、标点与同义词；中文和阿拉伯数字等值、单位准确换算可接受，例如三年／3 年、六个月／半年、100 ms／0.1 秒。",
+      "不能修复错误数字或改动对象、否定范围、严格大小关系；超过不等于达到，低于不等于不高于。",
+      "设备对象已在可信会话意图中确定时，答案可省略型号；对象解析正确性仍单独核验。"
+    ],
+    "query_matching_policy": "expected_questions 为对象＋意图＋约束的示例，不是 exact-match 金标准。改写可同义、重排；必须覆盖全部原意，不添条件或改变数值。questions_match_literally 只供调试。",
+    "leakage_policy": "reference_answer、required_facts、source_spans、量规和正负例不得注入问答模型或检索上下文。history_fixture 是显式标注的合成前提，不能当作实测答案或 PDF 证据。",
+    "history_policy": "Q1/Q3/Q4/Q5 的设备主题是前置用户声明；Q7 改为仅用户主题声明，不预填助手标准答案。每个场景使用独立线程。",
+    "performance_policy": "这轮只核对文件与来源，模型调用 0；23 个场景不是授权全量运行。先选组内代表和挑战样本，批准成本预算后再运行。"
+  },
+  "reporting_lanes": [
+    {
+      "lane": "answer_quality",
+      "description": "逐题按核心事实、禁忌陈述和适用安全顺序人工核对；RAGAS 分项仅为辅助。"
+    },
+    {
+      "lane": "workflow",
+      "description": "分别记录入口澄清、待办补充／新题／取消／不确定和状态前置；前置失败标阻塞，不能重复当作独立分支失败。"
+    },
+    {
+      "lane": "evaluation_runtime",
+      "description": "超时、无效结构、预算不足、链路失败、未知用量单独统计；error 不补 0，覆盖率不是准确率。"
+    }
+  ],
+  "coverage": {
+    "total_scenarios": 23,
+    "answerable_count": 18,
+    "clarification_flow_count": 4,
+    "unanswerable_count": 1,
+    "knowledge_group_count": 11,
+    "knowledge_groups": [
+      {
+        "group_id": "G01",
+        "name": "上电前检查与输入允许范围",
+        "case_ids": [
+          "Q1",
+          "Q6"
+        ],
+        "primary_case_ids": [
+          "Q1"
+        ]
+      },
+      {
+        "group_id": "G02",
+        "name": "过流触发条件",
+        "case_ids": [
+          "Q2",
+          "Q14"
+        ],
+        "primary_case_ids": [
+          "Q2"
+        ]
+      },
+      {
+        "group_id": "G03",
+        "name": "过流恢复安全顺序",
+        "case_ids": [
+          "Q3",
+          "Q9",
+          "Q15"
+        ],
+        "primary_case_ids": [
+          "Q3"
+        ]
+      },
+      {
+        "group_id": "G04",
+        "name": "记录保留与超期删除",
+        "case_ids": [
+          "Q4",
+          "Q8",
+          "Q10",
+          "Q23"
+        ],
+        "primary_case_ids": [
+          "Q4",
+          "Q23"
+        ]
+      },
+      {
+        "group_id": "G05",
+        "name": "维护周期",
+        "case_ids": [
+          "Q5",
+          "Q7",
+          "Q8"
+        ],
+        "primary_case_ids": [
+          "Q5"
+        ]
+      },
+      {
+        "group_id": "G06",
+        "name": "过压触发与恢复",
+        "case_ids": [
+          "Q16",
+          "Q17"
+        ],
+        "primary_case_ids": [
+          "Q16",
+          "Q17"
+        ]
+      },
+      {
+        "group_id": "G07",
+        "name": "欠压触发与动作",
+        "case_ids": [
+          "Q18"
+        ],
+        "primary_case_ids": [
+          "Q18"
+        ]
+      },
+      {
+        "group_id": "G08",
+        "name": "过温触发与复位",
+        "case_ids": [
+          "Q19"
+        ],
+        "primary_case_ids": [
+          "Q19"
+        ]
+      },
+      {
+        "group_id": "G09",
+        "name": "启动时序与观察",
+        "case_ids": [
+          "Q20"
+        ],
+        "primary_case_ids": [
+          "Q20"
+        ]
+      },
+      {
+        "group_id": "G10",
+        "name": "运行记录字段与时间",
+        "case_ids": [
+          "Q21"
+        ],
+        "primary_case_ids": [
+          "Q21"
+        ]
+      },
+      {
+        "group_id": "G11",
+        "name": "维护项目与记录",
+        "case_ids": [
+          "Q22"
+        ],
+        "primary_case_ids": [
+          "Q22"
+        ]
+      }
+    ],
+    "primary_case_ids": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q23",
+      "Q5",
+      "Q16",
+      "Q17",
+      "Q18",
+      "Q19",
+      "Q20",
+      "Q21",
+      "Q22"
+    ],
+    "challenge_case_ids": [
+      "Q6",
+      "Q7",
+      "Q8",
+      "Q14",
+      "Q15"
+    ],
+    "workflow_case_ids": [
+      "Q9",
+      "Q10",
+      "Q11",
+      "Q12"
+    ],
+    "unanswerable_case_ids": [
+      "Q13"
+    ],
+    "aggregate_policy": "主要事实指标按知识组先汇总组内代表，再给出各组结果和有效样本数；变体／挑战、流程、无答案另列，不把23场景叫23个独立知识点。组内双题如过压触发＋恢复不是统计独立性证明，不以重复题数加权。当前运行器未实现组级汇总。"
+  },
+  "flow_protocol": {
+    "policy_basis": "问题分析提示词与规格：空历史的未解析指代先澄清，不能仅因知识库只有一台设备就凭空确认为 PX-200；这不是修改业务政策来迁就测试。",
+    "shared_entry": {
+      "entry_id": "E01",
+      "case_ids": [
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12"
+      ],
+      "question": "它发生过流后如何恢复？",
+      "history_fixture": [],
+      "expected_status": "clarification",
+      "expected_phase": "awaiting_clarification",
+      "expected_pending_query": "它发生过流后如何恢复？",
+      "retrieval_expected": false,
+      "ordinary_answer_expected": false,
+      "prerequisite_on_failure": "记录入口 E01 失败；各分支第二轮 blocked_by_prerequisite／not_tested。端到端场景不通过，但后续动作能力未知，不连带判为失败。"
+    },
+    "branch_execution": "每个端到端分支用新线程独立核对前置；报告可合并根因 E01，但不能从一个分支复制状态或输出作为其他分支的实测。",
+    "focused_state_tests": "clarification-state-fixtures-v2.json 给出独立的合成 ThreadState 起点。只用于隔离分支，不能证明入口真实建立了待办，也不能冒充工作台端到端验收。",
+    "runner_compatibility": {
+      "gold_schema": "兼容现有 schema_version=1，只读来源验证可运行。",
+      "capture": "当前采集器未实现前置阻塞、语义查询核验或合成 pending 起点，不得直接将旧 flow_checks 宣称新版流程验收。",
+      "ragas": "当前五项事实指标不使用此量规，4个交互和无答案不能挤入单轮事实问答均值。",
+      "status": "workflow_runner_alignment_pending"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "Q1",
+      "knowledge_group_ids": [
+        "G01"
+      ],
+      "core_facts": [
+        "输入电源",
+        "接地线",
+        "负载连接",
+        "输入电压",
+        "频率",
+        "急停按钮已复位",
+        "保护指示灯熄灭",
+        "无故障代码"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "使用合格的万用表；输入电压 198 V 至 242 V、频率 49 Hz 至 51 Hz",
+          "source_spans": [
+            {
+              "page": 2,
+              "section": "2. 上电与启动流程",
+              "source_quote": "使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "检查项目与状态应覆盖核心清单；不强求出现测量工具名或量程数字。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "检查供电、接地及负载连接，输入电压和频率须在允许范围；急停已复位，保护灯已熄灭，面板无故障。",
+          "note": "同义表达可通过；没有量程数字和万用表不因此判漏答。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q2",
+      "knowledge_group_ids": [
+        "G02"
+      ],
+      "core_facts": [
+        "输出电流超过 16 A",
+        "持续 100 ms"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "触发后立即断开主回路",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 过流保护表格",
+              "source_quote": "立即断开主回路"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "明确是输出电流超过阈值且持续指定时间；达到、超过不可混同。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "输出电流大于 16 安并持续 0.1 秒时触发。",
+          "note": "单位换算允许；保护动作未复述不因此扣分。"
+        },
+        {
+          "kind": "反例",
+          "response": "达到 16 A 就触发。",
+          "note": "改变严格关系且遗漏持续条件。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q3",
+      "knowledge_group_ids": [
+        "G03"
+      ],
+      "core_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "optional_facts": [
+        {
+          "fact": "不要连续多次重启；保护原因未排除前不得旁路保护回路",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 故障排查建议",
+              "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "六步骤齐全并按 ordered_facts 顺序；第 3 页详细正文优先于第 4 页简化 FAQ。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q4",
+      "knowledge_group_ids": [
+        "G04"
+      ],
+      "core_facts": [
+        "三年"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "超期按先进先出原则删除",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "4. 运行记录与维护",
+              "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "回答默认保留期限即可；正确的删除策略允许补充，不强制。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "默认留存 3 年。",
+          "note": "不强制先进先出。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q5",
+      "knowledge_group_ids": [
+        "G05"
+      ],
+      "core_facts": [
+        "每六个月"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "明确六个月一次，不混为记录保留期限。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q6",
+      "knowledge_group_ids": [
+        "G01"
+      ],
+      "core_facts": [
+        "198 V 至 242 V",
+        "49 Hz 至 51 Hz"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "分别给出电压与频率完整区间，不能用额定值代替允许范围。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q7",
+      "knowledge_group_ids": [
+        "G05"
+      ],
+      "core_facts": [
+        "每六个月"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "分析后的问题对象为历史已明确的 PX-200；最终答案可以不重复型号。历史只供消解指代。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "每半年维护一次。",
+          "note": "在指定前置会话下对象已明确，不强求重复型号。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q8",
+      "knowledge_group_ids": [
+        "G04",
+        "G05"
+      ],
+      "core_facts": [
+        "三年",
+        "每六个月"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "超期按先进先出原则删除",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "4. 运行记录与维护",
+              "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "处理记录保留与维护两个意图，最终两项都回答；上下文足够却 fallback 仍是失败，不能以已有证据代替实际答案。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "运行记录三年，维护半年一次。",
+          "note": "两个意图都覆盖；删除策略不强制。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q9",
+      "knowledge_group_ids": [
+        "G03"
+      ],
+      "core_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "optional_facts": [
+        {
+          "fact": "不要连续多次重启；保护原因未排除前不得旁路保护回路",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 故障排查建议",
+              "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "首轮需真实建立待办；第二轮继续补充应针对 PX-200 的过流恢复，六步骤及顺序完整。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q10",
+      "knowledge_group_ids": [
+        "G04"
+      ],
+      "core_facts": [
+        "三年"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "超期按先进先出原则删除",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "4. 运行记录与维护",
+              "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "真实待办存在时，新题清除旧待办；不得混入过流恢复内容，终轮回答三年。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q11",
+      "knowledge_group_ids": [],
+      "core_facts": [],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "真实待办存在时，取消清空待办及补充；不分析、不检索、不生成普通事实答案。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q12",
+      "knowledge_group_ids": [],
+      "core_facts": [],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "真实待办存在且自动回复不能消解时，保留待办，不累计为已确认事实，提供继续补充／新题／取消选择。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q13",
+      "knowledge_group_ids": [],
+      "core_facts": [],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "用户可见答案不得编造地址、固件版本或升级步骤；资料不足应明确说明。",
+        "同时核对轨迹：正常无证据拒答和 invalid_json、超时等技术回退分栏记录。技术回退仅可标用户可见未编造，不能证明语义拒答通过。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q14",
+      "knowledge_group_ids": [
+        "G02"
+      ],
+      "core_facts": [
+        "输出电流超过 16 A",
+        "持续 100 ms"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "触发后立即断开主回路",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 过流保护表格",
+              "source_quote": "立即断开主回路"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "把正确 16 A／100 ms 条件与用户错误 15 A／50 ms 前提区分，不能肯定错误值。",
+        "允许否定或对比提及错误值；不按数字是否出现判错，不要求输出量规中的元话语。fallback 或无纠正不能通过。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "不是 15 A 持续 50 ms；PDF 规定输出电流超过 16 A 且持续 100 ms。",
+          "note": "错误数字处于否定范围，不是无证据肯定事实。"
+        },
+        {
+          "kind": "反例",
+          "response": "15 A 持续 50 ms 或 16 A 持续 100 ms 都会触发。",
+          "note": "肯定了文档不支持的阈值。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q15",
+      "knowledge_group_ids": [
+        "G03"
+      ],
+      "core_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "optional_facts": [
+        {
+          "fact": "不要连续多次重启；保护原因未排除前不得旁路保护回路",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 故障排查建议",
+              "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "六步骤及顺序与 Q3 相同，附加漏安全步骤负例；不是另一个独立知识点。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q16",
+      "knowledge_group_ids": [
+        "G06"
+      ],
+      "core_facts": [
+        "输入电压高于 242 V",
+        "持续 300 ms"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "断开主回路并记录告警",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 过压保护表格",
+              "source_quote": "断开主回路并记录告警"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "输入电压高于 242 V，持续 300 ms；不能把高于改成达到。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q17",
+      "knowledge_group_ids": [
+        "G06"
+      ],
+      "core_facts": [
+        "输入电压恢复正常",
+        "等待 30 秒",
+        "自动恢复"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "必须先电压恢复正常，再等待 30 秒自动恢复；不是过流的人工确认流程。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q18",
+      "knowledge_group_ids": [
+        "G07"
+      ],
+      "core_facts": [
+        "输入电压低于 198 V",
+        "持续 500 ms",
+        "禁止启动",
+        "显示 WAIT"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "输入恢复后重新执行自检",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 欠压保护表格",
+              "source_quote": "输入恢复后重新执行自检"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "同时回答低于 198 V、500 ms、禁止启动及 WAIT；不要混入过压触发条件。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q19",
+      "knowledge_group_ids": [
+        "G08"
+      ],
+      "core_facts": [
+        "散热器温度达到 85 ℃",
+        "温度降至 60 ℃ 以下",
+        "人工复位"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "停止输出并启动风扇",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "3. 保护功能与故障处理 / 过温保护表格",
+              "source_quote": "停止输出并启动风扇"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "达到 85 ℃ 为触发，降至严格低于 60 ℃ 后人工复位；不能允许等于 60 ℃ 或宣称自动恢复。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "反例",
+          "response": "85 ℃ 触发，降到 60 ℃ 就会自动恢复。",
+          "note": "复位边界及人工方式都错误。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q20",
+      "knowledge_group_ids": [
+        "G09"
+      ],
+      "core_facts": [
+        "等待约五秒",
+        "先闭合预充电回路",
+        "延时两秒后闭合主回路",
+        "启动后三十秒内",
+        "输入电流",
+        "输出电压",
+        "温度是否稳定",
+        "记录首次运行结果"
+      ],
+      "ordered_facts": [
+        "先闭合预充电回路",
+        "延时两秒后闭合主回路"
+      ],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "约五秒是自检等待；两秒是预充电到主回路延时；三十秒是启动后观察窗口，不能互换。",
+        "同时覆盖输入电流、输出电压、温度稳定性与首次记录；回路先后顺序不得颠倒。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q21",
+      "knowledge_group_ids": [
+        "G10"
+      ],
+      "core_facts": [
+        "本地时间",
+        "事件类型",
+        "发生时间",
+        "输入电压",
+        "输出电流",
+        "处理结果"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "事件种类包括启动、停止、保护和维护",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "4. 运行记录与维护",
+              "source_quote": "设备运行记录包括启动事件、停止事件、保护事件和维护事件。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "本地时间和五项运行记录字段齐全；不能与维护记录字段混淆。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q22",
+      "knowledge_group_ids": [
+        "G11"
+      ],
+      "core_facts": [
+        "清理散热通道",
+        "检查接线端子",
+        "验证急停按钮",
+        "使用标准负载",
+        "测试过压、欠压和过流保护",
+        "设备编号",
+        "检查项目",
+        "测试结果",
+        "维护人员姓名"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [],
+      "behavior_criteria": [
+        "维护任务和四项记录字段都覆盖；标准负载测试包括过压、欠压和过流，不凭常识增补为文档要求。"
+      ],
+      "semantic_examples": [],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "case_id": "Q23",
+      "knowledge_group_ids": [
+        "G04"
+      ],
+      "core_facts": [
+        "先进先出"
+      ],
+      "ordered_facts": [],
+      "optional_facts": [
+        {
+          "fact": "默认保留三年",
+          "source_spans": [
+            {
+              "page": 3,
+              "section": "4. 运行记录与维护",
+              "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+            }
+          ]
+        }
+      ],
+      "behavior_criteria": [
+        "明确先进先出；允许解释先进入／较早的记录先删除。"
+      ],
+      "semantic_examples": [
+        {
+          "kind": "语义等价正例",
+          "response": "先入先出，也就是先保存的超期记录先删除。",
+          "note": "允许通俗解释，不要求原句。"
+        }
+      ],
+      "review_status": "draft",
+      "reviewer": null,
+      "reviewed_at": null
+    }
+  ]
+}

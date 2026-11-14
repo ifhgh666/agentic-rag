@@ -1,73 +1,40 @@
-import type { ExecutionEvent, RetrievalResult, StageEvent, UsageEvent } from "../types/api";
+import { Check, ChevronDown, Circle, Search, X } from "lucide-react";
+import type { AnalysisEvent, ExecutionEvent, ParentToolResult, RetrievalResult, StageEvent, UsageEvent } from "../types/api";
+import { activities, nodeNames } from "../features/chat/activity";
+import { EvidenceList } from "../features/chat/EvidenceList";
 
-const stageNames: Record<string, string> = {
-  query_receipt: "接收问题",
-  query_representation: "问题表示",
-  child_retrieval: "子级检索",
-  score_filtering: "分数过滤",
-  parent_retrieval: "父级加载",
-  context_building: "上下文构建",
-  answer_generation: "答案生成",
-  answer_evaluation: "答案评估",
-  context_compression: "上下文压缩",
-};
-
-const executionNames: Record<string, string> = {
-  query_rewritten: "查询分析",
-  agent_decision: "检索决策",
-  tool_call: "工具调用",
-  hybrid_search: "混合检索",
-  parent_retrieval: "父级读取",
-  budget: "预算闸门",
-  context_compression: "上下文压缩",
-  model_call: "模型调用",
-  node: "流程节点",
-};
-
-function detailText(event: ExecutionEvent): string {
-  const details = event.details ?? {};
-  if (event.event === "hybrid_search") {
-    const score = event.score == null ? "" : ` · 最高分 ${event.score.toFixed(2)}`;
-    return `${String(details.count ?? 0)} 条结果 · ${String(details.retrieval_mode ?? "hybrid")}${score}`;
+const eventNames:Record<string,string>={node:"流程节点",model_start:"模型开始调用",model_call:"模型调用",agent_decision:"检索决策",query_rewritten:"问题补全与拆分",runtime_guard:"程序执行边界",hybrid_search:"混合检索",parent_retrieval:"父级读取",budget:"预算闸门"};
+const guardNames:Record<string,string>={timeout:"达到时间上限",budget_exceeded:"调用预算已用尽",verification_failed:"引文校验未通过",invalid_model_output:"模型输出格式未通过",context_budget_exceeded:"模型上下文容量不足",model_unavailable:"模型调用失败",index_not_ready:"知识库索引尚未就绪"};
+function detailText(event:ExecutionEvent) {
+  const details=event.details ?? {};
+  if(event.event==="query_rewritten") return [event.source==="cache"?"缓存复用":"问题补全与拆分",event.action==="new_question"?"用户选择新问题":event.relation_source==="pending_state"?"自动继续补充":"",event.query].filter(Boolean).join(" · ");
+  if(event.event==="runtime_guard") return guardNames[String(details.stop_reason)] ?? String(details.stop_reason ?? "执行边界");
+  if(event.event==="node") return `${nodeNames[event.node] ?? event.node}${details.status ? ` · ${["start","started"].includes(String(details.status))?"开始":details.status==="completed"?"完成":String(details.status)}`:""}`;
+  if(event.event==="agent_decision") {
+    const calls=Array.isArray(details.tool_calls)?details.tool_calls as {name:string;args?:Record<string,unknown>}[]:[];
+    return calls.map(call=>call.name==="search_child_chunks"?`搜索：${String(call.args?.query ?? "")}`:`读取章节：${String(call.args?.parent_id ?? "")}`).join("；") || "研究决策";
   }
-  if (event.event === "model_call") {
-    const input = details.input_tokens ?? details.input_tokens_estimate ?? 0;
-    const output = details.output_tokens ?? details.output_tokens_estimate ?? 0;
-    return `${String(input)} 输入 / ${String(output)} 输出 Token${details.usage_source === "provider" ? "" : "（估算）"}`;
-  }
-  if (event.event === "context_compression") return `${String(details.tokens_before ?? 0)} → ${String(details.tokens_after ?? 0)} Token`;
-  if (event.event === "budget") return String(details.reason ?? "已达到调用预算");
-  if (event.parent_id) return `Parent ${event.parent_id.slice(0, 8)}`;
-  if (event.tool) return event.tool;
-  if (event.query) return event.query.slice(0, 70);
-  return event.node;
+  return event.query || event.parent_id || nodeNames[event.node] || event.node;
 }
-
-export function ProcessPanel({ stages, retrieval, executionEvents, usage, notice }: { stages: StageEvent[]; retrieval: RetrievalResult[]; executionEvents: ExecutionEvent[]; usage?: UsageEvent | null; notice?: string }) {
-  const ordered = [...stages].sort((a, b) => a.sequence - b.sequence).filter((stage, index, all) => all.findIndex((item) => item.stage === stage.stage && item.status === stage.status) === index);
-  return (
-    <section className="process-panel panel" aria-label="问答执行过程">
-      <div className="panel-heading"><div><span className="eyebrow">TRACE / 01</span><h3>一次执行的脉搏</h3></div><span className="mono">{stages.length ? `${stages.length} 个阶段事件` : "等待执行"}</span></div>
-      {notice && <div className="process-notice" role="status"><span>!</span>{notice}</div>}
-      {usage && <div className="usage-strip" aria-label="本次模型用量">
-        <div><small>模型调用</small><strong>{usage.model_calls} / {usage.model_call_limit}</strong></div>
-        <div><small>输入 / 输出</small><strong>{usage.prompt_tokens} / {usage.completion_tokens}</strong></div>
-        <div><small>总 Token</small><strong>{usage.total_tokens}<em>{usage.usage_source === "provider" ? "实际" : usage.usage_source === "mixed" ? "部分估算" : "估算"}</em></strong></div>
-        <div><small>缓存命中</small><strong>{usage.cache_hit_count}</strong></div>
-        <div><small>总耗时</small><strong>{usage.duration_ms} ms</strong></div>
-      </div>}
-      <div className="stage-list">
-        {ordered.map((stage) => (
-          <div className={`stage-row ${stage.status}`} key={`${stage.stage}-${stage.status}-${stage.sequence}`}>
-            <span className="stage-index">{String(stage.sequence).padStart(2, "0")}</span>
-            <span className={`stage-symbol ${stage.status}`}>{stage.status === "completed" ? "✓" : stage.status === "failed" ? "!" : "·"}</span>
-            <span className="stage-name">{stageNames[stage.stage] ?? stage.stage}</span>
-            <span className="stage-status">{stage.status === "started" ? "进行中" : stage.status === "completed" ? stage.duration_ms != null ? `${stage.duration_ms} ms` : "完成" : stage.error ?? "失败"}</span>
-          </div>
-        ))}
+export function ProcessPanel({stages,executionEvents,usage,notice,analysis,retrieval=[],parentResults=[]}: {stages:StageEvent[];executionEvents:ExecutionEvent[];usage?:UsageEvent|null;notice?:string;analysis?:AnalysisEvent|null;retrieval?:RetrievalResult[];parentResults?:ParentToolResult[];embedded?:boolean}) {
+  const rows=activities(executionEvents);
+  const tools=rows.filter(row=>row.event.event.startsWith("tool"));
+  const provenance=executionEvents.length===0?"":executionEvents.every(e=>e.replayed===true)?"执行后回放":executionEvents.every(e=>e.replayed===false)?"实时更新":"按事件记录";
+  return <div className="process-panel" aria-label="问答执行过程">
+    {notice && <p className="process-notice">{notice}</p>}
+    {analysis && <div className="query-analysis"><strong>查询分析</strong><p>{analysis.is_clear?"问题已明确":"需要补充信息"}</p>{analysis.questions.length>0 && <ul>{analysis.questions.map((q,index)=><li key={index}>{q}</li>)}</ul>}</div>}
+    {tools.length>0 && <div className="tool-activities" aria-label="工具活动">{tools.map(row=><div className="tool-activity" key={row.key}>
+      {row.status==="completed"?<Check aria-label="已完成"/>:row.status==="failed"?<X aria-label="失败"/>:<Search aria-label="正在执行"/>}
+      <span><strong>{row.title}</strong><small>{row.status==="completed"?"已完成":row.status==="failed"?"执行失败":"正在执行"}{row.event.duration_ms!=null?` · ${row.event.duration_ms} ms`:""}</small></span>
+    </div>)}</div>}
+    <details className="technical-details"><summary><Circle aria-hidden="true"/><span>技术详情{provenance?` · ${provenance}`:""}</span><ChevronDown aria-hidden="true" className="details-chevron"/></summary>
+      {usage && <dl className="usage-strip" aria-label="本次模型用量"><div><dt>模型调用</dt><dd><strong>{usage.model_calls}{usage.model_call_limit!=null?` / ${usage.model_call_limit}`:""}</strong></dd></div><div><dt>输入 / 输出 Token</dt><dd>{usage.prompt_tokens} / {usage.completion_tokens}</dd></div><div><dt>总 Token</dt><dd>{usage.total_tokens} · {usage.usage_source==="provider"?"实际":usage.usage_source==="mixed"?"部分估算":"估算"}</dd></div><div><dt>缓存命中</dt><dd>{usage.cache_hit_count}</dd></div><div><dt>总耗时</dt><dd>{usage.duration_ms} ms</dd></div></dl>}
+      <div className="execution-list">{executionEvents.filter(event=>!["tool_start","tool_call","model_start","model_call"].includes(event.event)).map((event,index)=><div className="execution-row" key={index}><strong>{[event.branch_id,event.decision_source==="model"?"模型":event.decision_source==="runtime_guard"?"程序边界":null,eventNames[event.event]??event.event].filter(Boolean).join(" · ")}</strong><span>{detailText(event)}</span></div>)}
+      {rows.filter(row=>!row.event.event.startsWith("tool")).map(row=><div className="execution-row" key={row.key}><strong>{row.title} · {row.status==="running"?"模型开始调用":row.status==="failed"?"调用失败":"模型调用完成"}</strong><span>{row.event.duration_ms!=null?`${row.event.duration_ms} ms`:""}{row.status!=="running" && row.event.details?.input_tokens!=null?` · ${String(row.event.details.input_tokens)} 输入 / ${String(row.event.details.output_tokens ?? 0)} 输出 Token${row.event.details.usage_source==="provider"?"":"（估算）"}`:""}</span></div>)}
+      {stages.map((stage,index)=><div className="execution-row stage-row" key={`stage-${index}`}><strong>{stage.stage}</strong><span>{stage.status==="completed"?"完成":stage.status==="started"?"开始":stage.error||"失败"}</span></div>)}
+      {tools.map(row=><p className="technical-id" key={row.key}>{row.event.tool} · {String(row.event.details?.tool_run_id ?? row.event.tool_call_id ?? "未提供调用标识")}</p>)}
       </div>
-      {executionEvents.length > 0 && <div className="execution-list"><div className="subheading">执行轨迹 · {executionEvents.length}</div>{executionEvents.map((event, index) => <div className="execution-row" key={`${event.event}-${event.iteration ?? index}-${index}`}><span className="execution-node">{event.node}</span><strong>{executionNames[event.event] ?? event.event}</strong><span>{detailText(event)}</span><b>{event.duration_ms != null ? `${event.duration_ms} ms` : event.iteration ? `第 ${event.iteration} 轮` : ""}</b></div>)}</div>}
-      {retrieval.length > 0 && <div className="retrieval-list"><div className="subheading">保留的证据 · {retrieval.length}</div>{retrieval.map((item) => <div className="evidence-row" key={item.child_id}><div><strong>{item.filename}</strong><span>{item.section_title || "未命名章节"} · 父级 {item.parent_id.slice(0, 8)}</span><p>{item.content_preview}</p></div><b>{item.score.toFixed(2)}</b></div>)}</div>}
-    </section>
-  );
+    </details>
+    <EvidenceList sources={[]} retrieval={retrieval} parentResults={parentResults}/>
+  </div>;
 }

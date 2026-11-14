@@ -1,0 +1,611 @@
+{
+  "version": "query-rewrite-v1",
+  "frozen_on": "2026-10-10",
+  "real_entrance_order": [
+    "RW01",
+    "RW02",
+    "RW03",
+    "RW04",
+    "RW05",
+    "RW06",
+    "RW07",
+    "RW08",
+    "RW09",
+    "RW10",
+    "RW11",
+    "RW12",
+    "RW13",
+    "RW14",
+    "RW15",
+    "RW16",
+    "RW18"
+  ],
+  "cases": [
+    {
+      "id": "RW01",
+      "question": "PN8733 的启动电压是多少？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PN8733 的启动电压是多少？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW02",
+      "question": "ZX-900 的报警阈值是多少？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "ZX-900 的报警阈值是多少？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW03",
+      "question": "Guide_V1.PDF  中 PX-200 的启动电压是多少？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "Guide_V1.PDF  中 PX-200 的启动电压是多少？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW04",
+      "question": "PX-200 在电流不超过 16 A 时是否不得恢复？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 在电流不超过 16 A 时是否不得恢复？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW05",
+      "question": "PX-200 的输入电压为 195.5 V，持续 300 ms，是否触发欠压保护？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 的输入电压为 195.5 V，持续 300 ms，是否触发欠压保护？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW06",
+      "question": "PX-200 输入电压为 245 V，持续 400 ms，是否触发过压保护？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 输入电压为 245 V，持续 400 ms，是否触发过压保护？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW07",
+      "question": "它的恢复条件是什么？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [
+          {
+            "role": "user",
+            "content": "PN8733 的启动电压是多少？"
+          }
+        ],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PN8733 的恢复条件是什么？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW08",
+      "question": "那恢复条件呢？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [
+          {
+            "role": "user",
+            "content": "PX-200 输入电压为 245 V，持续 400 ms，是否触发保护？"
+          }
+        ],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "如果 PX-200 在输入电压为 245 V、持续 400 ms 时触发保护，其恢复条件是什么？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "保留245 V和400 ms",
+          "未确认保护触发，只能使用条件式"
+        ]
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW09",
+      "question": "它的参数是多少？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [
+          {
+            "role": "user",
+            "content": "介绍 PN8733 和 PX-200。"
+          }
+        ],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": false,
+        "questions": [],
+        "clarification_needed": "你指的是 PN8733 还是 PX-200 的哪项参数？",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW10",
+      "question": "MN-42",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "上电前检查哪些内容？",
+        "pending_clarifications": [],
+        "action": "continue_clarification"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "MN-42 上电前检查哪些内容？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW11",
+      "question": "PX-200 的过流阈值是多少，运行记录保留多久？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 的过流阈值是多少？",
+          "PX-200 的运行记录保留多久？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW12",
+      "question": "PX-200 的过流阈值、维护周期和运行记录保留期限分别是什么？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 的过流阈值是多少？",
+          "PX-200 的维护周期是什么？",
+          "PX-200 的运行记录保留期限是什么？"
+        ],
+        "clarification_needed": "",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW13",
+      "question": "PX-200 输入电压为 245 V，持续 400 ms，是否触发保护，如果触发如何恢复？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 输入电压为 245 V，持续 400 ms，是否触发保护？",
+          "如果 PX-200 在输入电压为 245 V、持续 400 ms 时触发保护，如何恢复？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "两个目标均保留共享条件",
+          "不预设已经触发"
+        ]
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW14",
+      "question": "PN8733 和 PX-200 的过流阈值分别是多少？哪个更高？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PN8733 的过流阈值是多少？",
+          "PX-200 的过流阈值是多少？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "原题保留比较目标",
+          "最终汇总完成比较"
+        ]
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW15",
+      "question": "PX-200 的启动电压、过流阈值、维护周期和记录保留期限分别是什么？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": false,
+        "questions": [],
+        "clarification_needed": "本轮最多处理三个独立需求，请选择启动电压、过流阈值、维护周期、记录保留期限中的三项。",
+        "checks": []
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW16",
+      "question": "PX-200 输入电压为 245 V，持续 400 ms，是否触发过压保护？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [
+          {
+            "role": "user",
+            "content": "PX-200 持续 40 ms 会触发保护吗？"
+          }
+        ],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 输入电压为 245 V，持续 400 ms，是否触发过压保护？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "当前400 ms优先，不复制40 ms"
+        ]
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW17",
+      "question": "任意陌生回复",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "上电前检查哪些内容？",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": false,
+        "questions": [],
+        "clarification_needed": "请明确选择继续补充、开始新问题或取消。",
+        "checks": [
+          "零模型/工具",
+          "待办不变"
+        ]
+      },
+      "validation": "engineering",
+      "stage": "A/B",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW18",
+      "question": "运行记录默认保留多久？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "过流保护后如何恢复？",
+        "pending_clarifications": [],
+        "action": "new_question"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "运行记录默认保留多久？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "旧待办不进模型输入",
+          "普通历史按需保留"
+        ]
+      },
+      "validation": "real_entrance",
+      "stage": "E",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW19",
+      "question": "",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "cancel"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [],
+        "clarification_needed": "",
+        "checks": [
+          "取消零模型",
+          "无待办continue为NO_PENDING_QUERY"
+        ]
+      },
+      "validation": "engineering",
+      "stage": "A/B",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW20",
+      "question": "问题？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [],
+        "clarification_needed": "",
+        "checks": [
+          "非JSON/缺字段/额外字段/错类型/空/重复/四问/交叉约束均拒绝",
+          "零自动重试"
+        ]
+      },
+      "validation": "engineering",
+      "stage": "A/D",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW21",
+      "question": "PX-200 输入电压为 245 V，持续 400 ms，是否触发保护？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "PX-200 输入电压为 245 V，持续 40 ms，是否触发保护？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "不再数字硬停",
+          "历史和分支原题仍400",
+          "注入错误不能作为语义质量通过"
+        ]
+      },
+      "validation": "engineering_injected_error",
+      "stage": "A/D",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW22",
+      "question": "Guide_V1.PDF  中 PX-200 的启动电压是多少？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "Guide_V1.PDF  中 PX-200 的启动电压是多少？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "精确键",
+          "线程/历史/摘要/动作/待办/补充/索引/模型/策略版本隔离",
+          "缓存不复制调用ID"
+        ]
+      },
+      "validation": "engineering",
+      "stage": "A/D",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW23",
+      "question": "问题？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [],
+        "clarification_needed": "",
+        "checks": [
+          "预算/窗口/历史超限不调用模型",
+          "同一deadline",
+          "迟到结果不保存"
+        ]
+      },
+      "validation": "engineering",
+      "stage": "A/D",
+      "execution_status": "not_run"
+    },
+    {
+      "id": "RW24",
+      "question": "设备输入电压为 245 V，持续 400 ms，会触发什么保护？之后如何恢复？",
+      "input": {
+        "conversation_summary": "",
+        "history_messages": [],
+        "pending_query": "",
+        "pending_clarifications": [],
+        "action": "auto"
+      },
+      "expected": {
+        "is_clear": true,
+        "questions": [
+          "设备输入电压为 245 V，持续 400 ms，会触发什么保护？之后如何恢复？"
+        ],
+        "clarification_needed": "",
+        "checks": [
+          "正常API新线程",
+          "每题一次",
+          "顺序失败停止",
+          "入口与完整答案分开验收"
+        ]
+      },
+      "validation": "real_e2e",
+      "stage": "F",
+      "execution_status": "not_run",
+      "requests": [
+        "设备输入电压为 245 V，持续 400 ms，会触发什么保护？之后如何恢复？",
+        "PX-200 输入电压为195 V，持续300 ms，是否会触发欠压保护？请说明判断依据。",
+        "PX-200 的过压保护触发电压和恢复电压分别是多少？哪个更高？"
+      ]
+    }
+  ]
+}

@@ -5,12 +5,10 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
 from app.config import Settings
 from app.knowledge.stores import DocumentStore
-from app.rag.context_builder import ContextBuilder
-from app.rag.evaluator import AnswerEvaluator
-from app.rag.generator import AnswerGenerator, INSUFFICIENT_ANSWER
+from app.knowledge.retrieval import ContextBuilder
+from app.core.answering import AnswerEvaluator, AnswerGenerator, INSUFFICIENT_ANSWER
 from app.rag.graph import AgentGraphService
 from scripts.smoke_v3_3 import main as multi_and_followup
 from scripts.smoke_v3_4_baseline import main as four_pdf_questions

@@ -6,12 +6,15 @@ __pycache__/
 venv/
 .pytest_cache/
 coverage/
+/backend/.pytest-tmp/
+/.pytest-prompt-basetemp/
 
 # Node
 node_modules/
 dist/
 build/
 *.log
+*.tsbuildinfo
 
 # 本地配置和运行数据
 .env
@@ -32,3 +35,7 @@ data/
 tmp/
 output/
 backend/tmp/
+/.playwright-mcp/
+/backend/tmp-debug/
+/backend/tmp-debug2/
+/backend/tmp-debug3/

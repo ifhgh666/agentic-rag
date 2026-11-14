@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "resource_setup_failure_not_a_successful_rag_capture",
+  "attempt_directory": "backend/tmp/v3-8/snapshot-b082ab75",
+  "observed_failure": "首次使用默认 BM25 的离线快照，在 FastEmbed 默认缓存加载时失败；参考编码器初始化抛出 Could not load model Qdrant/bm25 from any source。",
+  "cause": "原缓存不完整；补齐后 FastEmbed 的离线校验仍要求上游仓库没有的 mock.file 和 tamil.txt。在线默认编码器成功加载，但纯离线默认构造仍失败。",
+  "resolution": "只在诊断脚本中定位已下载的真实缓存，核对 english.txt 的长度和 Git blob 指纹，再使用同一词表、默认 stemming 参数显式指定缓存路径。生产配置和索引没有切换到空词表编码器。",
+  "resource_repository": "https://huggingface.co/Qdrant/bm25",
+  "resource_revision": "22b8d2af71a76161e18dd432d2cee0eefa66e412",
+  "downloaded_cache_file_count": 18,
+  "downloaded_cache_bytes": 25242,
+  "english_stopword_count": 179,
+  "initial_attempt_model_usage": {
+    "live_model_calls": null,
+    "enforced_upper_bound": 2,
+    "total_tokens": null,
+    "reason": "该次失败发生在完整捕获保存前，未保存模型用量，不能回填或假称零调用。",
+    "cloud_model_calls": 0
+  },
+  "does_not_count_as_q3_stability_run": true,
+  "config_or_formal_index_rebuilt": false,
+  "remaining_runtime_limit": "正式后台仍使用默认 FastEmbed 构造，首次加载可能查询 Hugging Face 元数据；本阶段未承诺整个应用完全断网启动。云端模型调用与资源元数据请求是不同口径。"
+}
