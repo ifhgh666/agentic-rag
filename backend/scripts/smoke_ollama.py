@@ -3,8 +3,8 @@
 import json
 
 from app.config import Settings
-from app.rag.generator import AnswerGenerator
-from app.rag.model_provider import OllamaProvider, create_provider
+from app.core.answering import AnswerGenerator
+from app.core.model_provider import OllamaProvider, create_provider
 
 
 def main() -> None:

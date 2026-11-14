@@ -1,14 +1,18 @@
 import axios from "axios";
 import { clearToken, getToken } from "../auth/session";
 import type {
+  HealthResponse,
   DocumentItem,
-  EvaluationResult,
-  LogItem,
+  VerificationResult,
   RetrievalResult,
   SourceRef,
   StageEvent,
   ExecutionEvent,
   UsageEvent,
+  ChatAction,
+  AnalysisEvent,
+  ClarificationEvent,
+  ParentToolResult,
 } from "../types/api";
 
 const http = axios.create({ baseURL: "/api" });
@@ -22,7 +26,7 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) clearToken();
+    if (error.response?.status === 401 && error.config?.url !== "/health") clearToken();
     return Promise.reject(error);
   },
 );
@@ -40,7 +44,16 @@ export async function login(username: string, password: string) {
 }
 
 export async function logout() {
-  await http.post("/auth/logout");
+  const token=getToken();
+  await http.post("/auth/logout",undefined,{headers:token ? {Authorization:`Bearer ${token}`} : undefined});
+}
+
+export async function getHealth(signal?: AbortSignal): Promise<HealthResponse> {
+  const { data } = await http.get<HealthResponse>("/health", { signal, timeout: 10000 });
+  if (data?.status !== "ok" || typeof data.service !== "string" || typeof data.index_ready !== "boolean") {
+    throw new Error("服务健康响应无效。");
+  }
+  return data;
 }
 
 export async function listDocuments(): Promise<DocumentItem[]> {
@@ -72,34 +85,35 @@ export async function retrieve(query: string): Promise<RetrievalResult[]> {
   return response.data.results;
 }
 
-export async function listLogs(filters: { level?: string; module?: string; request_id?: string; thread_id?: string; limit?: number }): Promise<LogItem[]> {
-  const response = await http.get<{ items: LogItem[] }>("/logs", { params: filters });
-  return response.data.items;
-}
-
 export type StreamEvent =
   | { type: "step"; data: StageEvent }
+  | { type: "analysis"; data: AnalysisEvent }
+  | { type: "clarification"; data: ClarificationEvent }
   | { type: "query_rewritten"; data: ExecutionEvent & { query: string; is_clear: boolean } }
   | { type: "agent_decision"; data: ExecutionEvent & { action?: string } }
   | { type: "tool_call"; data: ExecutionEvent }
+  | { type: "tool_start"; data: ExecutionEvent }
+  | { type: "tool_result"; data: ParentToolResult }
+  | { type: "runtime_guard"; data: ExecutionEvent }
   | { type: "hybrid_search"; data: ExecutionEvent }
   | { type: "parent_retrieval"; data: ExecutionEvent }
   | { type: "budget"; data: ExecutionEvent }
   | { type: "node"; data: ExecutionEvent }
-  | { type: "context_compression"; data: ExecutionEvent & { summary_chars?: number; removed_messages?: number; tokens_before?: number; tokens_after?: number; token_threshold?: number } }
+  | { type: "model_start"; data: ExecutionEvent }
   | { type: "model_call"; data: ExecutionEvent }
   | { type: "usage"; data: UsageEvent }
   | { type: "retrieval"; data: { request_id: string; thread_id: string; results: RetrievalResult[] } }
   | { type: "answer"; data: { request_id: string; thread_id: string; answer: string; sources: SourceRef[] } }
-  | { type: "evaluation"; data: EvaluationResult }
+  | { type: "verification"; data: VerificationResult }
   | { type: "error"; data: { request_id: string; thread_id: string; code: string; message: string } }
   | { type: "complete"; data: { request_id: string; thread_id: string; status: string; reason?: string | null } };
 
-export async function streamChat(question: string, threadId: string | null, onEvent: (event: StreamEvent) => void): Promise<void> {
+export async function streamChat(question: string, threadId: string | null, onEvent: (event: StreamEvent) => void, action: ChatAction = "auto", signal?: AbortSignal): Promise<void> {
   const response = await fetch("/api/chat/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken() ?? ""}` },
-    body: JSON.stringify({ question, ...(threadId ? { thread_id: threadId } : {}) }),
+    body: JSON.stringify({ question, action, ...(threadId ? { thread_id: threadId } : {}) }),
+    signal,
   });
   if (!response.ok || !response.body) {
     if (response.status === 401) clearToken();
@@ -108,7 +122,7 @@ export async function streamChat(question: string, threadId: string | null, onEv
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
-  while (true) {
+  try { while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
@@ -119,7 +133,56 @@ export async function streamChat(question: string, threadId: string | null, onEv
       const dataLine = chunk.split("\n").find((line) => line.startsWith("data:"));
       if (!eventLine || !dataLine) continue;
       const type = eventLine.replace("event:", "").trim() as StreamEvent["type"];
-      onEvent({ type, data: JSON.parse(dataLine.replace("data:", "").trim()) } as StreamEvent);
+      const data = JSON.parse(dataLine.replace("data:", "").trim());
+      // 正常聊天不再提供在线核验；旧服务发来的核验和评分也不进入界面。
+      if (["evaluation", "verification", "answer_evaluation"].includes(String(type))) continue;
+      if (type === "analysis" && !isAnalysis(data)) continue;
+      if (type === "tool_result" && !isParentToolResult(data)) continue;
+      if (!signal?.aborted) onEvent({ type, data } as StreamEvent);
+      if (type === "complete") return;
     }
+  } } finally {
+    // Aborting an already closed body can reject; preserve the original read/parse outcome.
+    try { await reader.cancel(); } catch { /* Body is closed or aborted. */ }
+    reader.releaseLock();
   }
+}
+
+export function isParentToolResult(value: unknown): value is ParentToolResult {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Record<string, unknown>;
+  if (data.tool !== "retrieve_parent_chunks" || typeof data.request_id !== "string"
+    || typeof data.thread_id !== "string" || typeof data.tool_call_id !== "string"
+    || !data.parent || typeof data.parent !== "object") return false;
+  const parent = data.parent as Record<string, unknown>;
+  return ["parent_id", "document_id", "filename", "section_title", "text"].every((key) => typeof parent[key] === "string")
+    && ["page_start", "page_end"].every((key) => parent[key] == null || (typeof parent[key] === "number" && Number.isFinite(parent[key])));
+}
+
+export function isAnalysis(value: unknown): value is AnalysisEvent {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Record<string, unknown>;
+  const referenceProtocol = data.loop_protocol_version === "reference.v1";
+  return data.schema_version === 1 && typeof data.request_id === "string" && typeof data.thread_id === "string"
+    && typeof data.is_clear === "boolean" && Array.isArray(data.questions)
+    && data.questions.every((question) => typeof question === "string" && (referenceProtocol || question.trim().length > 0))
+    && (referenceProtocol || (data.is_clear ? data.questions.length >= 1 && data.questions.length <= 3 : data.questions.length === 0))
+    && ["new_question", "clarification", "uncertain"].includes(String(data.relation))
+    && ["model", "cache", "safe_fallback"].includes(String(data.source))
+    && (data.relation_source === undefined || ["action", "pending_state"].includes(String(data.relation_source)))
+    && (data.action === undefined || ["auto", "new_question", "continue_clarification", "cancel"].includes(String(data.action)))
+    && (data.budget_node === undefined || data.budget_node === "query_analysis")
+    && (data.model_call_id === undefined || data.model_call_id === null || typeof data.model_call_id === "string");
+}
+
+export function isVerification(value: unknown): value is VerificationResult {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Record<string, unknown>;
+  const statuses = ["verified", "issue_found", "not_applicable", "not_evaluated"];
+  return data.schema_version === 2 && typeof data.reason === "string"
+    && typeof data.request_id === "string" && typeof data.thread_id === "string"
+    && ["found", "insufficient", "not_evaluated"].includes(String(data.evidence_status))
+    && statuses.includes(String(data.citation_status)) && statuses.includes(String(data.numeric_status))
+    && ["verified", "issue_found", "not_evaluated"].includes(String(data.completeness_status))
+    && !["overall", "relevance", "faithfulness", "completeness"].some((field) => field in data);
 }

@@ -1,0 +1,7 @@
+{
+  "stage": "017-B",
+  "runtime": {"@base-ui/react":"Nova primitives","axios":"existing REST","class-variance-authority":"Nova variants","cn":"class utility","lucide-react":"icons","motion":"animation","react":"framework","react-dom":"renderer","zustand":"memory chat session","react-markdown":"safe answer rendering","remark-gfm":"Markdown tables and lists"},
+  "development": ["@tailwindcss/vite","@types/react","@types/react-dom","@vitejs/plugin-react","jsdom","tailwindcss","typescript","vite","vitest"],
+  "introducedRuntime": ["@base-ui/react","class-variance-authority","cn","lucide-react","motion","zustand","react-markdown","remark-gfm"],
+  "introducedDevelopment": ["tailwindcss","@tailwindcss/vite"]
+}

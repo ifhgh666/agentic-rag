@@ -15,8 +15,8 @@ from app.knowledge.manager import DocumentManager
 from app.knowledge.pdf_parser import PdfParser
 from app.knowledge.stores import DocumentStore
 from app.observability.logger import StructuredLogger
-from app.rag.embeddings import EmbeddingService
-from app.rag.index_store import IndexStore
+from app.knowledge.embeddings import EmbeddingService
+from app.knowledge.index import IndexStore
 
 
 def _backup(settings: Settings, store: DocumentStore) -> Path:

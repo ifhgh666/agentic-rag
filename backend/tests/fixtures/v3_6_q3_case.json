@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "case_id": "Q3",
+  "question": "过流保护后如何恢复？",
+  "source": {
+    "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+    "filename": "rag-test-knowledge-document.pdf",
+    "pdf_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+    "parents_sha256": "2CAB940CED57632A9474B52B52423F1BFFA374960B5FC9D5ED1AFF133B138F35",
+    "manifest_sha256": "C5DEDDE022ED7F1E8A5EF7A041B2D228A5E756F08617CE6A7A629B4D5FDE7409",
+    "kind": "正式 Parent Store 的两个原文段落，不是重解析或重建索引"
+  },
+  "expected_sequence": [
+    {"id": "disconnect_load", "description": "先断开负载", "probe_terms": ["断开负载"]},
+    {"id": "wait_discharge", "description": "等待设备完全放电", "probe_terms": ["完全放电"]},
+    {"id": "check_short", "description": "再检查负载端是否短路", "probe_terms": ["短路"]},
+    {"id": "clear_alarm", "description": "确认负载正常后，按确认键清除告警", "probe_terms": ["确认键"]},
+    {"id": "restart", "description": "最后重新执行上电流程", "probe_terms": ["重新执行上电流程", "重新启动", "重新上电"]}
+  ],
+  "rubric": "接受语义等价表达，但不得省略前两步或颠倒安全流程。probe_terms 只给本固定样例做字面定位，不是通用业务规则、语义评估器或 RAGAS 分数；实测回答仍须人工核对动作和前置条件。只核对答案正文，不将引文计入答案。",
+  "records": [
+    {
+      "record_id": "203db154-9cbc-4055-9ec9-7978a20edbfc",
+      "parent_id": "203db154-9cbc-4055-9ec9-7978a20edbfc",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "source": "rag-test-knowledge-document.pdf",
+      "section_title": "PDF 解析问答系统 / 3. 保护功能与故障处理",
+      "page_start": 3,
+      "page_end": 3,
+      "procedure_units": [{"text": "如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。", "complete": true, "ordinal": 0}],
+      "raw_text": "## 3. 保护功能与故障处理 PX-200 提供四类主要保护功能。保护动作时，控制器会断开主回路并保存事件记录。部分故障可以自动 恢复，涉及过流和过温的故障必须等待人工检查。 |保护类型|触发条件|设备动作|恢复方式| |---|---|---|---| |过压保护|输入电压高于 242 V 持续 300 ms|断开主回路并记录告警|电压恢复正常后等待 30 秒自动恢复| |欠压保护|输入电压低于 198 V 持续 500 ms|禁止启动并显示 WAIT|输入恢复后重新执行 自检| |过流保护|输出电流超过 16 A 持续 100 ms|立即断开主回路|检查负载后按确认键 ，再手动启动| |过温保护|散热器温度达到 85 ℃|停止输出并启动风扇|温度降至 60 ℃ 以下后人工复位| 故障排查建议 当设备显示 FAULT 时，首先记录故障代码和发生时间，然后检查输入电压、负载电流、散热通道和急停 回路。不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。 如果故障代码为 OC-16，表示发生过流保护。应先断开负载，等待设备完全放电，再检查负载端是否短 路。确认负载正常后，按确认键清除告警，最后重新执行上电流程。 如果故障代码为 OT-85，表示发生过温保护。应保持设备断电并检查风扇、进风口和散热片。环境温度建议保持在 0 ℃ 至 40 ℃ 之间。"
+    },
+    {
+      "record_id": "f4ce8c10-13a6-40ba-b2f0-91aa2d7b45e1",
+      "parent_id": "f4ce8c10-13a6-40ba-b2f0-91aa2d7b45e1",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "source": "rag-test-knowledge-document.pdf",
+      "section_title": "PDF 解析问答系统 / 6. 推荐问答测试集",
+      "page_start": 4,
+      "page_end": 4,
+      "raw_text": "## 6. 推荐问答测试集 以下问题可直接复制到问答页面，用于验证检索结果是否来自本 PDF。 |编号|问题|文档中的关键答案| |---|---|---| |问题 1|设备上电前需要检查哪些内容？|输入电压、接地线、负载连接、急停按钮、保 护指示灯和面板故障状态。| |问题 2|PX-200 的过流保护阈值是多少？|输出电流超过 16 A 持续 100 ms 会触发过流保护。| |问题 3|过流保护后如何恢复？|检查负载并确认没有短路，按确认键清除告警 ，然后手动重新启动。| |问题 4|运行记录默认保留多久？|运行记录默认保留三年，超过期限后按先进先 出原则删除。| |问题 5|设备多久进行一次例行维护？|每六个月进行一次例行维护。| |问题 6|如果设备显示 OT-85 应该怎么办？|保持设备断电，检查风扇、进风口和散热片， 温度降至 60 ℃ 以下后人工复位。| 文档结束 · 该文件仅用于本地 PDF-RAG 功能测试"
+    }
+  ],
+  "counterexample": {
+    "kind": "人为固定的有效简表回答，只模拟模型输出；不是历史响应的逐字备份",
+    "model_response": {
+      "is_answerable": true,
+      "answer": "检查负载并确认没有短路后，按确认键清除告警，然后手动重新启动。",
+      "citations": [{"citation_id": "E2", "quote": "检查负载并确认没有短路，按确认键清除告警 ，然后手动重新启动。"}],
+      "conflict": false
+    }
+  },
+  "historical_observation": {
+    "date": "2026-09-28",
+    "report": "specs/003-v3-ollama-rag-quality/v3-post-acceptance-plan.md",
+    "raw_answer_recorded": false,
+    "overall_score": 84,
+    "score_status": "历史固定评分；当前已废弃，不能解释为本次实测评分"
+  }
+}

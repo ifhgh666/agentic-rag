@@ -18,6 +18,7 @@ from app.main import create_app
 @pytest.fixture
 def settings(tmp_path):
     return Settings(
+        _env_file=None,
         data_dir=tmp_path,
         admin_username="admin",
         admin_password_hash=hash_password("secret"),
@@ -34,13 +35,24 @@ def settings(tmp_path):
 
 @pytest.fixture
 def client(settings):
-    return TestClient(create_app(settings))
+    with TestClient(create_app(settings)) as test_client:
+        yield test_client
 
 
 @pytest.fixture
 def auth_headers(client):
     response = client.post("/api/auth/login", json={"username": "admin", "password": "secret"})
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+@pytest.fixture
+def ready_empty_index(client, monkeypatch):
+    """Available empty search for protocol tests, distinct from unavailable index."""
+    from types import SimpleNamespace
+    graph = client.app.state.services.pipeline.graph_service
+    monkeypatch.setattr(graph.retriever, "index_store", SimpleNamespace(ready=True))
+    monkeypatch.setattr(graph.retriever, "search_with_cache", lambda *args, **kwargs: ([], False))
+    return graph
 
 
 @pytest.fixture
