@@ -1,10 +1,10 @@
 import json
 from uuid import uuid4
-
 from app.knowledge.stores import DocumentStore
-from app.rag.evidence import EvidenceSelector, find_numeric_conflict
-from app.rag.generator import AnswerGenerator, INSUFFICIENT_ANSWER
-from app.rag.model_provider import ModelResult
+from app.core.legacy_rag import EvidenceSelector, find_numeric_conflict
+from app.core.answering import AnswerGenerator, INSUFFICIENT_ANSWER
+from app.core.model_provider import ModelResult
+from tests.fakes.providers import ScriptedModel
 from app.schemas.chat import RetrievalResult
 from app.schemas.common import utc_now
 from app.schemas.documents import DocumentStatus, KnowledgeDocument, ParentContextUnit
@@ -90,7 +90,7 @@ def test_grounded_answer_only_accepts_exact_quotes_and_adds_source(settings):
     assert trace["node"] == "collect_answer" and trace["input_tokens"] == 40
 
 
-def test_short_model_answer_expands_to_its_verified_condition_sentence(settings):
+def test_short_model_answer_is_preserved_with_condition_in_separate_quote(settings):
     quote = "输出电流超过 16 A 持续 100 ms 会触发过流保护。"
     record = _record("E1", quote)
     provider = StubProvider({
@@ -99,40 +99,47 @@ def test_short_model_answer_expands_to_its_verified_condition_sentence(settings)
     })
     answer, _, _ = AnswerGenerator(settings, provider).generate_grounded_with_result("过流阈值？", [record])
     assert "16 A" in answer.split("\n\n依据：", 1)[0]
-    assert "100 ms" in answer.split("\n\n依据：", 1)[0]
+    assert "100 ms" not in answer.split("\n\n依据：", 1)[0]
+    assert "100 ms" in answer.split("依据：", 1)[1]
 
 
-def test_grounded_answer_recovers_from_wrong_number_only_using_verified_quote(settings):
+def test_declared_document_fact_number_mismatch_fails_without_raw_substitution(settings):
     record = _record("E1", "PX-200 的过流阈值是 16 A。")
     provider = StubProvider({
         "is_answerable": True, "answer": "PX-200 的过流阈值是 30 A。",
         "citations": [{"citation_id": "E1", "quote": "PX-200 的过流阈值是 16 A。"}], "conflict": False,
+        "claims": [{"kind": "document_fact", "text": "PX-200 的过流阈值是 30 A。", "citation_ids": ["E1"]}],
     })
     generated, cited_ids, trace = AnswerGenerator(settings, provider).generate_grounded_with_result("阈值？", [record])
-    assert "16 A" in generated and "30 A" not in generated
-    assert cited_ids == ["E1"] and trace["validation_status"] == "extractive_recovery"
+    assert "16 A" not in generated and "30 A" not in generated
+    assert cited_ids == [] and trace["stop_reason"] == "verification_failed"
+    assert len(provider.calls) == 2
 
     fake_quote = StubProvider({
         "is_answerable": True, "answer": "PX-200 的过流阈值是 16 A。",
         "citations": [{"citation_id": "E1", "quote": "PX-200 的过流阈值是 30 A。"}], "conflict": False,
     })
     rejected, cited_ids, _ = AnswerGenerator(settings, fake_quote).generate_grounded_with_result("阈值？", [record])
-    assert rejected == INSUFFICIENT_ANSWER and cited_ids == []
+    assert "校验" in rejected and cited_ids == []
 
 
-def test_grounded_answer_remaps_real_quote_to_its_actual_source(settings):
+def test_model_repairs_wrong_source_id_after_feedback_without_program_remapping(settings):
     wrong = _record("E1", "PX-200 记录默认保留三年。", "records.pdf")
     actual = _record("E2", "例行维护周期为六个月。", "maintenance.pdf")
-    provider = StubProvider({
+    payload = {
         "is_answerable": True,
         "answer": "设备每六个月维护一次。",
         "citations": [{"citation_id": "E1", "quote": "例行维护周期为六个月。"}],
         "conflict": False,
-    })
+    }
+    corrected = {**payload, "citations": [{"citation_id": "E2", "quote": "例行维护周期为六个月。"}]}
+    provider = ScriptedModel(ModelResult(json.dumps(payload, ensure_ascii=False), "fake", "script"),
+        ModelResult(json.dumps(corrected, ensure_ascii=False), "fake", "script"))
     answer, cited_ids, trace = AnswerGenerator(settings, provider).generate_grounded_with_result("维护周期？", [wrong, actual])
     assert cited_ids == ["E2"]
     assert "maintenance.pdf" in answer and "records.pdf" not in answer
-    assert trace["remapped_citations"] == 1
+    assert trace["validation_status"] == "verification_failed"
+    assert trace["repair_calls"][0]["validation_status"] == "accepted"
 
 
 def test_conflicting_evidence_cites_both_sources_without_picking_one(settings):

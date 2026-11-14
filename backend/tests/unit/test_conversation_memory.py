@@ -1,9 +1,9 @@
 from langgraph.checkpoint.memory import InMemorySaver
 
-from app.rag.conversation_memory import ConversationMemory
+from app.core.conversation import ConversationMemory
 
 
-def test_memory_is_thread_scoped_and_rolls_old_messages_into_summary():
+def test_memory_is_thread_scoped_and_preserves_overflow_for_budgeted_summary():
     memory = ConversationMemory(history_messages_to_keep=2)
 
     memory.append("thread-a", "PN8733 是什么？", "它是一款电源管理芯片。")
@@ -11,21 +11,22 @@ def test_memory_is_thread_scoped_and_rolls_old_messages_into_summary():
 
     snapshot = memory.snapshot("thread-a")
     assert len(snapshot.messages) == 2
-    assert "PN8733 是什么？" in snapshot.conversation_summary
+    assert snapshot.conversation_summary == ""
+    assert memory.thread_state("thread-a").summary_backlog[0].content == "PN8733 是什么？"
     assert memory.snapshot("thread-b").messages == []
     assert memory.snapshot("thread-b").conversation_summary == ""
 
 
-def test_memory_rewrites_contextual_question_or_requests_clarification():
+def test_memory_prepares_original_question_and_separate_history_for_analyzer():
     memory = ConversationMemory(history_messages_to_keep=4)
 
-    assert memory.prepare("new-thread", "它的保护功能呢？").question_is_clear is False
+    assert memory.prepare("new-thread", "它的保护功能呢？").rewritten_query == "它的保护功能呢？"
 
     memory.append("thread-a", "PN8733 的上电流程是什么？", "资料显示先完成输入检测。")
     prepared = memory.prepare("thread-a", "那它的保护功能呢？")
     assert prepared.question_is_clear is True
-    assert "PN8733 的上电流程是什么？" in prepared.rewritten_query
-    assert "那它的保护功能呢？" in prepared.rewritten_query
+    assert prepared.history_messages[0]["content"] == "PN8733 的上电流程是什么？"
+    assert prepared.rewritten_query == "那它的保护功能呢？"
 
 
 def test_memory_uses_in_process_langgraph_saver_and_clears_thread():

@@ -2,7 +2,7 @@ from uuid import uuid4
 
 import numpy as np
 
-from app.rag.vector_db_manager import VectorDbManager
+from app.knowledge.index import VectorDbManager
 from app.schemas.documents import SearchableChildUnit
 
 

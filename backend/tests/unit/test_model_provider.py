@@ -5,17 +5,16 @@ import httpx
 import pytest
 from langchain_core.messages import AIMessage
 from pydantic import ValidationError
-
-from app.rag.generator import AnswerGenerator
-from app.rag.model_provider import (
+from app.core.answering import AnswerGenerator
+from app.core.model_provider import (
     FakeProvider,
-    ModelResult,
     OllamaProvider,
     OpenAICompatibleProvider,
     create_provider,
     visible_content,
+    ModelResult,
 )
-from app.rag.model_schema import QueryAnalysis
+from app.core.legacy_schemas import QueryAnalysis
 
 
 def test_ollama_selected_without_cloud_fallback(settings, monkeypatch):
@@ -27,7 +26,7 @@ def test_ollama_selected_without_cloud_fallback(settings, monkeypatch):
         "llm_model": "cloud-test",
     })
     monkeypatch.setattr(
-        "app.rag.model_provider.OpenAICompatibleProvider",
+        "app.core.model_provider.OpenAICompatibleProvider",
         lambda _: pytest.fail("Ollama 模式不应创建云端客户端"),
     )
     assert isinstance(create_provider(settings), OllamaProvider)
@@ -67,8 +66,10 @@ def test_ollama_timeout_is_not_silently_retried_as_cloud(settings):
     settings = settings.model_copy(update={"llm_provider": "ollama", "ollama_model": "local-test"})
     model = Mock()
     model.invoke.side_effect = httpx.ReadTimeout("local timeout")
-    with pytest.raises(RuntimeError, match="local timeout"):
+    with pytest.raises(RuntimeError, match="timeout") as failure:
         AnswerGenerator(settings, OllamaProvider(settings, model=model)).generate("问题", "证据")
+    assert "local timeout" not in str(failure.value)
+    model.invoke.assert_called_once()
 
 
 def test_ollama_connection_and_timeout_config(settings, monkeypatch):
@@ -85,7 +86,7 @@ def test_ollama_connection_and_timeout_config(settings, monkeypatch):
     client = MagicMock()
     client.get.return_value = response
     client.__enter__.return_value = client
-    monkeypatch.setattr("app.rag.model_provider.httpx.Client", lambda **_: client)
+    monkeypatch.setattr("app.core.model_provider.httpx.Client", lambda **_: client)
     assert provider.check_connection() == ["local-test"]
     client.get.assert_called_once_with("http://127.0.0.1:11434/api/tags")
 
@@ -120,11 +121,106 @@ def test_openai_provider_only_when_explicitly_selected(settings):
 
 
 def test_query_analysis_schema_accepts_at_most_three_questions():
-    assert QueryAnalysis(is_clear=True, questions=["问题一"], clarification_needed=None).questions == ["问题一"]
+    assert QueryAnalysis(is_clear=True, questions=["问题一"], clarification_needed="").questions == ["问题一"]
     with pytest.raises(ValidationError):
-        QueryAnalysis(is_clear=True, questions=["一", "二", "三", "四"])
+        QueryAnalysis(is_clear=True, questions=["一", "二", "三", "四"], clarification_needed="")
 
 
 def test_private_thinking_is_removed_before_returning_answer():
     assert visible_content("<think>不可展示的推理</think>结论是 16 A。") == "结论是 16 A。"
     assert visible_content("<think>未闭合的推理") == ""
+
+
+class _EndpointRejected(Exception):
+    """模拟端点以“该 response_format 类型不可用”拒绝结构化输出。"""
+
+    status_code = 400
+
+    def __init__(self, message: str = "This response_format type is unavailable now"):
+        super().__init__(message)
+
+
+def _cloud_settings(settings):
+    return settings.model_copy(update={
+        "llm_provider": "openai_compatible",
+        "llm_base_url": "https://cloud.example/v1",
+        "llm_api_key": "secret",
+        "llm_model": "cloud-test",
+    })
+
+
+def _reply(content: str):
+    return SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content=content, tool_calls=[]))],
+        usage=SimpleNamespace(prompt_tokens=7, completion_tokens=3),
+    )
+
+
+def test_cloud_provider_disables_response_compression(settings, monkeypatch):
+    captured = {}
+
+    def fake_openai(**kwargs):
+        captured.update(kwargs)
+        return Mock()
+
+    monkeypatch.setattr("openai.OpenAI", fake_openai)
+    OpenAICompatibleProvider(_cloud_settings(settings))
+    assert captured["default_headers"]["Accept-Encoding"] == "identity"
+
+
+def test_structured_output_falls_back_to_json_object_once(settings):
+    client = Mock()
+    client.chat.completions.create.side_effect = [
+        _EndpointRejected(),
+        _reply('{"is_clear": true, "questions": ["问题"], "clarification_needed": ""}'),
+    ]
+    provider = OpenAICompatibleProvider(_cloud_settings(settings), client=client)
+    result = provider.complete(
+        [{"role": "system", "content": "入口"}, {"role": "user", "content": "问题"}],
+        response_schema=QueryAnalysis,
+    )
+    assert client.chat.completions.create.call_count == 2
+    first, second = [call.kwargs for call in client.chat.completions.create.call_args_list]
+    assert first["response_format"]["type"] == "json_schema"
+    assert second["response_format"] == {"type": "json_object"}
+    assert "is_clear" in second["messages"][0]["content"]
+    assert "secret" not in second["messages"][0]["content"]
+    assert result.structured_mode == "json_object" and result.structured_fallback is True
+
+
+def test_structured_output_does_not_fall_back_when_supported(settings):
+    client = Mock()
+    client.chat.completions.create.return_value = _reply(
+        '{"is_clear": true, "questions": [], "clarification_needed": ""}'
+    )
+    provider = OpenAICompatibleProvider(_cloud_settings(settings), client=client)
+    result = provider.complete([{"role": "user", "content": "问题"}], response_schema=QueryAnalysis)
+    assert client.chat.completions.create.call_count == 1
+    assert client.chat.completions.create.call_args.kwargs["response_format"]["type"] == "json_schema"
+    assert result.structured_mode == "json_schema" and result.structured_fallback is False
+
+
+def test_structured_output_does_not_fall_back_on_non_format_error(settings):
+    class _ServerError(Exception):
+        status_code = 500
+
+    client = Mock()
+    client.chat.completions.create.side_effect = _ServerError("boom")
+    provider = OpenAICompatibleProvider(_cloud_settings(settings), client=client)
+    with pytest.raises(_ServerError):
+        provider.complete([{"role": "user", "content": "问题"}], response_schema=QueryAnalysis)
+    assert client.chat.completions.create.call_count == 1
+
+
+def test_both_structured_modes_rejected_is_endpoint_failure(settings):
+    client = Mock()
+    client.chat.completions.create.side_effect = _EndpointRejected()
+    provider = OpenAICompatibleProvider(_cloud_settings(settings), client=client)
+    with pytest.raises(_EndpointRejected):
+        provider.complete([{"role": "user", "content": "问题"}], response_schema=QueryAnalysis)
+    assert client.chat.completions.create.call_count == 2
+
+
+def test_local_providers_report_no_structured_mode(settings):
+    result = FakeProvider().complete([{"role": "user", "content": "问题"}])
+    assert result.structured_mode == "none" and result.structured_fallback is False

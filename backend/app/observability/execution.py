@@ -6,7 +6,12 @@ from typing import Any
 
 
 _SECRET_KEYS = {"api_key", "apikey", "authorization", "password", "jwt_secret", "token"}
-_HIDDEN_KEYS = {"prompt", "system_prompt", "reasoning", "chain_of_thought", "thoughts"}
+_HIDDEN_KEYS = {
+    "prompt", "system_prompt", "reasoning", "chain_of_thought", "thoughts",
+    "input_messages", "tool_definitions", "candidate_content", "returned_tool_calls",
+    "original_conditions", "history_messages", "conversation_summary",
+    "pending_query", "pending_clarifications", "raw_model_output",
+}
 _SECRET_VALUE_RE = re.compile(
     r"(?:sk-[A-Za-z0-9_-]+|Bearer\s+[A-Za-z0-9._~-]+|(?:api[_-]?key|token|secret|password)\s*[=:]\s*[^\s,;]+)",
     re.IGNORECASE,

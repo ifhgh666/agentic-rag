@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from app.knowledge.stores import DocumentStore
-from app.rag.context_builder import ContextBuilder
+from app.knowledge.retrieval import ContextBuilder
 from app.schemas.chat import RetrievalResult
 from app.schemas.common import utc_now
 from app.schemas.documents import DocumentStatus, KnowledgeDocument, ParentContextUnit

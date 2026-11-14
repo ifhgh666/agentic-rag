@@ -1,316 +1,361 @@
-from __future__ import annotations
+from typing import Literal, Set
+from langchain_core.messages import SystemMessage, HumanMessage, RemoveMessage, AIMessage, ToolMessage
+from langgraph.types import Command
+from .graph_state import State, AgentState
+from .schemas import QueryAnalysis, ToolRouting
+from .prompts import *
+from .tools import estimate_context_tokens
+from .graph_state import BASE_TOKEN_THRESHOLD, CHILD_CHUNK_SEPARATOR, MAIN_HISTORY_MESSAGES_TO_KEEP, TOKEN_GROWTH_FACTOR
 
-import json
-import re
-from typing import Any
-from uuid import uuid4
+if MAIN_HISTORY_MESSAGES_TO_KEEP < 2:
+    raise ValueError("MAIN_HISTORY_MESSAGES_TO_KEEP must be at least 2.")
 
-from langchain_core.messages import AIMessage, ToolMessage
+PRE_ANSWER_HISTORY_MESSAGES_TO_KEEP = max(MAIN_HISTORY_MESSAGES_TO_KEEP - 1, 0)
 
-from ..schemas.chat import RetrievalResult
-from .graph_state import AgentState, Evidence
-from .evidence import EvidenceSelector, source_from_record
-from .generator import INSUFFICIENT_ANSWER
-from .query_planner import ModelQueryGenerator, QueryGenerator, RuleBasedQueryGenerator, normalize_query
-
-
-def _trace(state: dict, name: str) -> list[str]:
-    return [*state.get("node_trace", []), name]
-
-
-def _tool_content(message: ToolMessage) -> dict[str, Any] | None:
-    content = message.content
-    if isinstance(content, dict):
-        return content
-    if isinstance(content, list):
-        return content[0] if content and isinstance(content[0], dict) else None
-    if not isinstance(content, str):
-        return None
-    try:
-        value = json.loads(content)
-    except json.JSONDecodeError:
-        return None
-    return value if isinstance(value, dict) else None
-
-
-def _latest_tool_payload(state: AgentState) -> dict[str, Any] | None:
-    for message in reversed(state.get("messages", [])):
-        if isinstance(message, ToolMessage):
-            return _tool_content(message)
-    return None
-
-
-def _tool_call(name: str, args: dict[str, Any]) -> AIMessage:
-    return AIMessage(
-        content="",
-        tool_calls=[
-            {
-                "name": name,
-                "args": args,
-                "id": f"{name}-{uuid4().hex}",
-                "type": "tool_call",
-            }
-        ],
-    )
-
-
-def _can_continue(state: AgentState, max_tool_calls: int, max_iterations: int) -> bool:
+def _is_plain_conversation_message(msg) -> bool:
     return (
-        state.get("tool_call_count", 0) < max_tool_calls
-        and state.get("iteration_count", 0) < max_iterations
+        isinstance(msg, (HumanMessage, AIMessage))
+        and not getattr(msg, "tool_calls", None)
+        and not getattr(msg, "name", None)
     )
 
+def _name_internal_message(message, name):
+    """Tag a subgraph-only message so it is not treated as chat history."""
+    return message.model_copy(update={"name": name})
 
-def _merge_results(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    merged: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for item in [*existing, *incoming]:
-        key = str(item.get("child_id", ""))
-        if key and key in seen:
-            continue
-        if key:
-            seen.add(key)
-        merged.append(item)
-    return merged
-
-
-def _merge_parents(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    merged: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for item in [*existing, *incoming]:
-        key = str(item.get("parent_id", ""))
-        if key and key in seen:
-            continue
-        if key:
-            seen.add(key)
-        merged.append(item)
-    return merged
-
-
-def _as_retrieval_result(evidence: Evidence) -> dict[str, Any]:
-    return {
-        "child_id": str(evidence.child_id),
-        "parent_id": str(evidence.parent_id),
-        "document_id": str(evidence.document_id),
-        "filename": evidence.source,
-        "section_title": evidence.section.get("title", ""),
-        "score": evidence.score,
-        "retrieval_mode": evidence.retrieval_mode,
-        "content_preview": evidence.content[:240],
-        "text": evidence.content,
-    }
-
-
-def _request_search(
-    state: AgentState,
-    query: str,
-    trace: list[str],
-    default_limit: int,
-) -> dict[str, Any]:
-    normalized = normalize_query(query)
-    keys = set(state.get("retrieval_keys", set()))
-    keys.add(f"search::{normalized}")
-    history = list(state.get("query_history", []))
-    if normalized not in {normalize_query(item) for item in history}:
-        history.append(query.strip())
-    return {
-        "messages": [_tool_call("search_child_chunks", {"query": query.strip(), "limit": default_limit, "request_id": state.get("request_id", "")})],
-        "retrieval_keys": keys,
-        "query_history": history,
-        "node_trace": trace,
-    }
-
-
-def _request_parent(state: AgentState, parent_id: str, trace: list[str]) -> dict[str, Any]:
-    keys = set(state.get("retrieval_keys", set()))
-    keys.add(f"parent::{parent_id}")
-    return {
-        "messages": [_tool_call("retrieve_parent_chunks", {"parent_id": parent_id, "request_id": state.get("request_id", "")})],
-        "retrieval_keys": keys,
-        "node_trace": trace,
-    }
-
-
-def _budget_result(state: AgentState, trace: list[str]) -> dict[str, Any]:
-    if state.get("retrieved_results"):
-        return {
-            "messages": [AIMessage(content="已达到检索预算，将基于当前证据回答。")],
-            "budget_exceeded": True,
-            "node_trace": trace,
-        }
-    return {
-        "messages": [AIMessage(content="已达到检索预算，当前没有足够证据。")],
-        "status": "fallback",
-        "budget_exceeded": True,
-        "node_trace": trace,
-    }
-
-
-def _next_query(
-    state: AgentState,
-    question: str,
-    query_generator: QueryGenerator,
-) -> tuple[str, dict[str, Any] | None]:
-    generate_with_result = getattr(query_generator, "generate_with_result", None)
-    if generate_with_result:
-        if isinstance(query_generator, ModelQueryGenerator):
-            return generate_with_result(
-                question, state.get("query_history", []),
-                thread_id=state.get("thread_id", ""), request_id=state.get("request_id", ""),
-            )
-        return generate_with_result(question, state.get("query_history", []))
-    return query_generator.generate(question, state.get("query_history", [])), None
-
-
-_MODEL_ID_RE = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]{1,12}[-_]?\d{2,}[A-Za-z0-9-]*(?![A-Za-z0-9])")
-
-
-def _evidence_matches(question: str, texts: list[str]) -> bool:
-    ids = {item.lower() for item in _MODEL_ID_RE.findall(question)}
-    if not ids:
-        return True
-    corpus = "\n".join(texts).lower()
-    evidence_ids = {item.lower() for item in _MODEL_ID_RE.findall(corpus)}
-    # 章节可能省略型号；只有明确命中另一个型号时才判定为不匹配。
-    return not evidence_ids or ids.issubset(evidence_ids)
-
-
-def _retry_search(
-    state: AgentState,
-    base_update: dict[str, Any],
-    trace: list[str],
-    query_generator: QueryGenerator,
-    default_limit: int,
-    max_tool_calls: int,
-    max_iterations: int,
-) -> dict[str, Any]:
-    keys = set(state.get("retrieval_keys", set()))
-    if len([key for key in keys if key.startswith("search::")]) >= 2 or not _can_continue(state, max_tool_calls, max_iterations):
-        return {**base_update, **_budget_result({**state, **base_update}, trace)}
-    new_query, model_call = _next_query(state, state.get("question", ""), query_generator)
-    if model_call:
-        base_update["model_trace"] = [*state.get("model_trace", []), model_call]
-    if not new_query or f"search::{normalize_query(new_query)}" in keys:
-        return {**base_update, "status": "fallback", "node_trace": trace, "messages": [AIMessage(content="没有找到新的检索方向。") ]}
-    return {**base_update, **_request_search({**state, **base_update}, new_query, trace, default_limit)}
-
-
-def orchestrator(
-    state: AgentState,
-    default_limit: int = 7,
-    max_tool_calls: int = 8,
-    max_iterations: int = 10,
-    query_generator: QueryGenerator | None = None,
-    parent_threshold_chars: int = 240,
-) -> dict[str, Any]:
-    """V2-4 编排器：搜索不足时生成新 Query，Child 碎片时读取 Parent。"""
-    query_generator = query_generator or RuleBasedQueryGenerator()
-    next_iteration = min(state.get("iteration_count", 0) + 1, max_iterations)
-    trace = _trace(state, "orchestrator")
-    if state.get("tool_call_count", 0) == 0:
-        if not _can_continue(state, max_tool_calls, max_iterations):
-            return _budget_result(state, trace)
-        return _request_search(state, state.get("question", ""), trace, default_limit) | {
-            "iteration_count": next_iteration
-        }
-
-    payload = _latest_tool_payload(state)
-    last_tool = state.get("last_tool", "")
-    results = list(state.get("retrieved_results", []))
-    contexts = list(state.get("retrieved_contexts", []))
-    parents = list(state.get("parent_contexts", []))
-    keys = set(state.get("retrieval_keys", set()))
-    base_update: dict[str, Any] = {
-        "iteration_count": next_iteration,
-        "last_tool_error": "" if payload else state.get("last_tool_error", ""),
-    }
-
-    if last_tool == "search_child_chunks":
-        if not payload or payload.get("tool") != "search_child_chunks":
-            if results:
-                return {
-                    **base_update,
-                    "messages": [AIMessage(content="搜索工具未返回新证据，将使用已有证据。")],
-                    "node_trace": trace,
-                }
-            return {**base_update, "status": "fallback", "node_trace": trace, "messages": [AIMessage(content="搜索失败。 ")]}
-
-        incoming: list[dict[str, Any]] = []
-        for item in payload.get("results", []):
-            evidence = Evidence.model_validate(item)
-            contexts.append(evidence.model_dump(mode="json"))
-            incoming.append(_as_retrieval_result(evidence))
-        results = _merge_results(results, incoming)
-        base_update.update({"retrieved_contexts": contexts, "retrieved_results": results})
-
-        if not incoming:
-            return _retry_search(state, base_update, trace, query_generator, default_limit, max_tool_calls, max_iterations)
-
-        if parents:
-            return {**base_update, "messages": [AIMessage(content="已获得 Parent 上下文。")], "node_trace": trace}
-
-        short_result = next((item for item in results if len(item.get("text") or "") < parent_threshold_chars), None)
-        if short_result:
-            parent_id = str(short_result["parent_id"])
-            if f"parent::{parent_id}" not in keys:
-                if not _can_continue(state, max_tool_calls, max_iterations):
-                    return {**base_update, **_budget_result(state, trace)}
-                return {**base_update, **_request_parent({**state, **base_update}, parent_id, trace)}
-        if not _evidence_matches(state.get("question", ""), [item.get("text", "") for item in results]):
-            base_update.update({"retrieved_results": [], "retrieved_contexts": [], "parent_contexts": []})
-            return _retry_search(state, base_update, trace, query_generator, default_limit, max_tool_calls, max_iterations)
-        return {**base_update, "messages": [AIMessage(content="当前 Child 证据已足够。")], "node_trace": trace}
-
-    if last_tool == "retrieve_parent_chunks":
-        if payload and payload.get("tool") == "retrieve_parent_chunks":
-            parents = _merge_parents(parents, [payload])
-        if parents and not _evidence_matches(state.get("question", ""), [str(item.get("content", "")) for item in parents]):
-            base_update.update({"retrieved_results": [], "retrieved_contexts": [], "parent_contexts": []})
-            return _retry_search(state, base_update, trace, query_generator, default_limit, max_tool_calls, max_iterations)
-        return {
-            **base_update,
-            "parent_contexts": parents,
-            "messages": [AIMessage(content="已完成 Parent 检索。")],
-            "node_trace": trace,
-        }
-
-    if results:
-        return {**base_update, "messages": [AIMessage(content="将使用当前证据回答。")], "node_trace": trace}
-    return {**base_update, "status": "fallback", "node_trace": trace, "messages": [AIMessage(content="没有可用证据。 ")]}
-
-
-def collect_answer(
-    state: AgentState,
-    selector: EvidenceSelector,
-) -> dict[str, Any]:
-    trace = _trace(state, "collect_answer")
-    results = [RetrievalResult.model_validate(item) for item in state.get("retrieved_results", [])]
-    records = selector.select(state.get("question", ""), results, state.get("request_id", ""))
-    if not records:
-        return fallback_response({**state, "node_trace": trace})
-    return {
-        "context": "\n\n".join(str(item["content"]) for item in records),
-        "context_messages": records,
-        "sources": [source_from_record(item).model_dump(mode="json") for item in records],
-        "status": "evidence_ready",
-        "node_trace": trace,
-    }
-
-
-def fallback_response(state: dict) -> dict[str, Any]:
-    return {
-        "final_answer": INSUFFICIENT_ANSWER,
-        "context": "",
-        "sources": [],
-        "status": "fallback",
-        "node_trace": _trace(state, "fallback_response"),
-    }
-
-
-def evaluate_answer(state: AgentState, evaluator) -> dict[str, Any]:
-    evaluation = evaluator.evaluate(
-        state.get("question", ""),
-        state.get("final_answer", INSUFFICIENT_ANSWER),
-        state.get("context", ""),
+def _retrieval_contexts(messages) -> list[str]:
+    contexts = []
+    ignored_prefixes = (
+        "NO_RELEVANT_CHUNKS",
+        "NO_PARENT_DOCUMENT",
+        "RETRIEVAL_ERROR:",
+        "PARENT_RETRIEVAL_ERROR:",
     )
-    return {"evaluation": evaluation.model_dump(mode="json"), "node_trace": _trace(state, "evaluate_answer")}
+    for message in messages:
+        if not isinstance(message, ToolMessage):
+            continue
+        content = str(message.content).strip()
+        if content and not content.startswith(ignored_prefixes):
+            parts = content.split(CHILD_CHUNK_SEPARATOR) if message.name == "search_child_chunks" else [content]
+            contexts.extend(part for part in parts if part)
+    return list(dict.fromkeys(contexts))
+
+def _format_conversation(messages) -> str:
+    lines = []
+    for msg in messages:
+        role = "User" if isinstance(msg, HumanMessage) else "Assistant"
+        lines.append(f"{role}: {msg.content}")
+    return "\n".join(lines)
+
+def _remove_messages_not_in(messages, keep_ids):
+    removals = []
+    for msg in messages:
+        msg_id = getattr(msg, "id", None)
+        if isinstance(msg, SystemMessage) or not msg_id:
+            continue
+        if msg_id not in keep_ids:
+            removals.append(RemoveMessage(id=msg_id))
+    return removals
+
+def _recent_conversation(messages, pending_query="") -> list:
+    """Return recent context before the current user message.
+
+    During clarification, exclude the unresolved query and the assistant's
+    clarification request because they are represented explicitly.
+    """
+    plain_messages = [msg for msg in messages if _is_plain_conversation_message(msg)]
+    recent_messages = plain_messages[:-1]
+
+    if pending_query:
+        for index in range(len(recent_messages) - 1, -1, -1):
+            msg = recent_messages[index]
+            if isinstance(msg, HumanMessage) and str(msg.content).strip() == pending_query:
+                return recent_messages[:index]
+
+    return recent_messages
+
+def select_tool(state: State, llm):
+    messages = state["messages"]
+    summary = state.get("conversation_summary", "")
+    recent = _format_conversation(_recent_conversation(messages))
+    current = str(messages[-1].content).strip()
+    context = f"Conversation Summary:\n{summary}\n\nRecent Conversation:\n{recent}\n\nUser Query:\n{current}"
+    decision = llm.with_structured_output(ToolRouting).invoke([
+        SystemMessage(content=get_tool_routing_prompt()),
+        HumanMessage(content=context),
+    ])
+    return {"needs_knowledge": decision.needs_knowledge}
+
+
+def summarize_history(state: State, llm):
+    messages = state.get("messages", [])
+    updates = {"agent_answers": [{"__reset__": True}]}
+
+    if not messages:
+        return updates
+
+    plain_messages = [msg for msg in messages if _is_plain_conversation_message(msg)]
+    keep_count = PRE_ANSWER_HISTORY_MESSAGES_TO_KEEP
+    messages_to_summarize = plain_messages[:-keep_count] if len(plain_messages) > keep_count else []
+    keep_ids = {getattr(msg, "id", None) for msg in plain_messages[-keep_count:]}
+    keep_ids.discard(None)
+
+    removals = _remove_messages_not_in(messages, keep_ids)
+    if removals:
+        updates["messages"] = removals
+
+    if not messages_to_summarize:
+        return updates
+
+    existing_summary = state.get("conversation_summary", "").strip()
+    conversation = "Existing summary:\n"
+    conversation += f"{existing_summary or '(none)'}\n\n"
+    conversation += "New messages to merge into the summary:\n"
+    conversation += _format_conversation(messages_to_summarize)
+
+    summary_response = llm.invoke([
+        SystemMessage(content=get_conversation_summary_prompt()),
+        HumanMessage(content=conversation),
+    ])
+    updates["conversation_summary"] = summary_response.content.strip()
+    return updates
+
+def answer_direct(state: State, llm):
+    messages = [SystemMessage(content=get_direct_answer_prompt())]
+    summary = state.get("conversation_summary", "").strip()
+    if summary:
+        messages.append(HumanMessage(content=f"Conversation summary for context:\n{summary}"))
+    messages.extend(message for message in state["messages"] if _is_plain_conversation_message(message))
+    response = llm.invoke(messages)
+    return {
+        "messages": [AIMessage(content=response.content)],
+        "originalQuery": "",
+        "questionIsClear": True,
+        "pendingQuery": "",
+        "pendingClarifications": [],
+        "rewrittenQuestions": [],
+    }
+
+
+def rewrite_query(state: State, llm):
+    last_message = state["messages"][-1]
+    current_query = str(last_message.content).strip()
+    conversation_summary = state.get("conversation_summary", "").strip()
+    pending_query = state.get("pendingQuery", "").strip()
+    pending_clarifications = state.get("pendingClarifications", [])
+    recent_messages = _recent_conversation(state["messages"], pending_query)
+
+    context_parts = []
+    if conversation_summary:
+        context_parts.append(f"Conversation Summary:\n{conversation_summary}")
+    if recent_messages:
+        context_parts.append(f"Recent Conversation:\n{_format_conversation(recent_messages)}")
+
+    if pending_query:
+        clarifications = [*pending_clarifications, current_query]
+        clarification_text = "\n".join(
+            f"{index}. {value}" for index, value in enumerate(clarifications, start=1)
+        )
+        context_parts.append(
+            f"Unresolved User Query:\n{pending_query}\n\n"
+            f"User Clarifications:\n{clarification_text}"
+        )
+        original_query = f"{pending_query}\nClarifications:\n{clarification_text}"
+    else:
+        clarifications = []
+        context_parts.append(f"User Query:\n{current_query}")
+        original_query = current_query
+
+    context_section = "\n\n".join(context_parts)
+    llm_with_structure = llm.with_structured_output(QueryAnalysis)
+    response = llm_with_structure.invoke([SystemMessage(content=get_rewrite_query_prompt()), HumanMessage(content=context_section)])
+    clarification_message_update = (
+        [_name_internal_message(last_message, "clarification_response")]
+        if pending_query else []
+    )
+
+    if response.questions and response.is_clear:
+        return {
+            "questionIsClear": True,
+            "originalQuery": original_query,
+            "pendingQuery": "",
+            "pendingClarifications": [],
+            "rewrittenQuestions": response.questions,
+            "messages": clarification_message_update,
+        }
+
+    clarification = response.clarification_needed.strip() or "I need more information to understand your question."
+    return {
+        "questionIsClear": False,
+        "originalQuery": "",
+        "pendingQuery": pending_query or current_query,
+        "pendingClarifications": clarifications,
+        "rewrittenQuestions": [],
+        "messages": clarification_message_update + [
+            AIMessage(content=clarification, name="clarification")
+        ],
+    }
+
+def request_clarification(state: State):
+    return {}
+
+# --- Agent Nodes ---
+def orchestrator(state: AgentState, llm_with_tools):
+    context_summary = state.get("context_summary", "").strip()
+    sys_msg = SystemMessage(content=get_orchestrator_prompt())
+    summary_injection = (
+        [HumanMessage(content=f"[COMPRESSED CONTEXT FROM PRIOR RESEARCH]\n\n{context_summary}")]
+        if context_summary else []
+    )
+    if not state.get("messages"):
+        human_msg = HumanMessage(content=state["question"], name="agent_question")
+        force_search = HumanMessage(content="YOU MUST CALL 'search_child_chunks' AS THE FIRST STEP TO ANSWER THIS QUESTION.")
+        response = llm_with_tools.invoke([sys_msg] + summary_injection + [human_msg, force_search])
+        response = _name_internal_message(response, "agent_response")
+        return {"messages": [human_msg, response], "tool_call_count": len(response.tool_calls or []), "iteration_count": 1}
+
+    response = llm_with_tools.invoke([sys_msg] + summary_injection + state["messages"])
+    response = _name_internal_message(response, "agent_response")
+    tool_calls = response.tool_calls if hasattr(response, "tool_calls") else []
+    return {"messages": [response], "tool_call_count": len(tool_calls) if tool_calls else 0, "iteration_count": 1}
+
+def fallback_response(state: AgentState, llm):
+    seen = set()
+    unique_contents = []
+    for m in state["messages"]:
+        if isinstance(m, ToolMessage) and m.content not in seen:
+            unique_contents.append(m.content)
+            seen.add(m.content)
+
+    context_summary = state.get("context_summary", "").strip()
+
+    context_parts = []
+    if context_summary:
+        context_parts.append(f"## Compressed Research Context (from prior iterations)\n\n{context_summary}")
+    if unique_contents:
+        context_parts.append(
+            "## Retrieved Data (current iteration)\n\n" +
+            "\n\n".join(f"--- DATA SOURCE {i} ---\n{content}" for i, content in enumerate(unique_contents, 1))
+        )
+
+    context_text = "\n\n".join(context_parts) if context_parts else "No data was retrieved from the documents."
+
+    prompt_content = (
+        f"USER QUERY: {state.get('question')}\n\n"
+        f"{context_text}\n\n"
+        f"INSTRUCTION:\nProvide the best possible answer using only the data above."
+    )
+    response = llm.invoke([SystemMessage(content=get_fallback_response_prompt()), HumanMessage(content=prompt_content)])
+    response = _name_internal_message(response, "agent_response")
+    return {"messages": [response]}
+
+def should_compress_context(state: AgentState) -> Command[Literal["compress_context", "orchestrator"]]:
+    messages = state["messages"]
+
+    new_ids: Set[str] = set()
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+            for tc in msg.tool_calls:
+                if tc["name"] == "retrieve_parent_chunks":
+                    raw = tc["args"].get("parent_id") or tc["args"].get("id") or tc["args"].get("ids") or []
+                    if isinstance(raw, str):
+                        new_ids.add(f"parent::{raw}")
+                    else:
+                        new_ids.update(f"parent::{r}" for r in raw)
+
+                elif tc["name"] == "search_child_chunks":
+                    query = tc["args"].get("query", "")
+                    if query:
+                        new_ids.add(f"search::{query}")
+            break
+
+    updated_ids = state.get("retrieval_keys", set()) | new_ids
+
+    current_token_messages = estimate_context_tokens(messages)
+    current_token_summary = estimate_context_tokens([HumanMessage(content=state.get("context_summary", ""))])
+    current_tokens = current_token_messages + current_token_summary
+
+    max_allowed = BASE_TOKEN_THRESHOLD + int(current_token_summary * TOKEN_GROWTH_FACTOR)
+
+    goto = "compress_context" if current_tokens > max_allowed else "orchestrator"
+    return Command(
+        update={
+            "retrieval_keys": updated_ids,
+            "retrieved_contexts": _retrieval_contexts(messages),
+        },
+        goto=goto,
+    )
+
+def compress_context(state: AgentState, llm):
+    messages = state["messages"]
+    existing_summary = state.get("context_summary", "").strip()
+
+    if not messages:
+        return {}
+
+    conversation_text = f"USER QUESTION:\n{state.get('question')}\n\nConversation to compress:\n\n"
+    if existing_summary:
+        conversation_text += f"[PRIOR COMPRESSED CONTEXT]\n{existing_summary}\n\n"
+
+    for msg in messages[1:]:
+        if isinstance(msg, AIMessage):
+            tool_calls_info = ""
+            if getattr(msg, "tool_calls", None):
+                calls = ", ".join(f"{tc['name']}({tc['args']})" for tc in msg.tool_calls)
+                tool_calls_info = f" | Tool calls: {calls}"
+            conversation_text += f"[ASSISTANT{tool_calls_info}]\n{msg.content or '(tool call only)'}\n\n"
+        elif isinstance(msg, ToolMessage):
+            tool_name = getattr(msg, "name", "tool")
+            conversation_text += f"[TOOL RESULT — {tool_name}]\n{msg.content}\n\n"
+
+    summary_response = llm.invoke([SystemMessage(content=get_context_compression_prompt()), HumanMessage(content=conversation_text)])
+    new_summary = summary_response.content
+
+    retrieved_ids: Set[str] = state.get("retrieval_keys", set())
+    if retrieved_ids:
+        parent_ids = sorted(r for r in retrieved_ids if r.startswith("parent::"))
+        search_queries = sorted(r.replace("search::", "") for r in retrieved_ids if r.startswith("search::"))
+
+        block = "\n\n---\n**Already executed (do NOT repeat):**\n"
+        if parent_ids:
+            block += "Parent chunks retrieved:\n" + "\n".join(f"- {p.replace('parent::', '')}" for p in parent_ids) + "\n"
+        if search_queries:
+            block += "Search queries already run:\n" + "\n".join(f"- {q}" for q in search_queries) + "\n"
+        new_summary += block
+
+    return {"context_summary": new_summary, "messages": [RemoveMessage(id=m.id) for m in messages[1:]]}
+
+def collect_answer(state: AgentState):
+    last_message = state["messages"][-1]
+    is_valid = isinstance(last_message, AIMessage) and last_message.content and not last_message.tool_calls
+    answer = last_message.content if is_valid else "Unable to generate an answer."
+    return {
+        "final_answer": answer,
+        "agent_answers": [{
+            "index": state["question_index"],
+            "question": state["question"],
+            "answer": answer,
+            "contexts": state.get("retrieved_contexts", []),
+        }]
+    }
+# --- End of Agent Nodes---
+
+def aggregate_answers(state: State, llm):
+    messages = state.get("messages", [])
+    plain_messages = [msg for msg in messages if _is_plain_conversation_message(msg)]
+    keep_ids = {getattr(msg, "id", None) for msg in plain_messages[-PRE_ANSWER_HISTORY_MESSAGES_TO_KEEP:]}
+    keep_ids.discard(None)
+    removals = _remove_messages_not_in(messages, keep_ids)
+
+    if not state.get("agent_answers"):
+        return {"messages": removals + [AIMessage(content="No answers were generated.")]}
+
+    sorted_answers = sorted(state["agent_answers"], key=lambda x: x["index"])
+
+    formatted_answers = ""
+    for i, ans in enumerate(sorted_answers, start=1):
+        formatted_answers += (f"\nRetrieved response {i}:\n"f"{ans['answer']}\n")
+
+    user_message = HumanMessage(content=f"""Original user question: {state["originalQuery"]}\nRetrieved answers:{formatted_answers}""")
+    synthesis_response = llm.invoke([SystemMessage(content=get_aggregation_prompt()), user_message])
+    return {"messages": removals + [AIMessage(content=synthesis_response.content)]}

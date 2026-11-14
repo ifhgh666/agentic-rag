@@ -4,12 +4,10 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from uuid import uuid4
-
 from app.config import Settings
 from app.knowledge.stores import DocumentStore
-from app.rag.context_builder import ContextBuilder
-from app.rag.evaluator import AnswerEvaluator
-from app.rag.generator import AnswerGenerator, INSUFFICIENT_ANSWER
+from app.knowledge.retrieval import ContextBuilder
+from app.core.answering import AnswerEvaluator, AnswerGenerator, INSUFFICIENT_ANSWER
 from app.rag.graph import AgentGraphService
 from app.schemas.chat import RetrievalResult
 from app.schemas.common import utc_now

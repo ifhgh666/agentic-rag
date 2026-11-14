@@ -1,12 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
-
-from app.rag.cost_control import BoundedCache, ModelCallBudget, summarize_usage
-from app.rag.conversation_memory import ConversationMemory
-from app.rag.model_provider import ModelResult
-from app.rag.query_analysis import QueryAnalyzer
-from app.rag.query_planner import ModelQueryGenerator
-from app.rag.tools import RequestToolCache
-from app.rag.retriever import Retriever
+from app.core.model_call import BoundedCache, ModelCallBudget, build_model_budget, summarize_usage
+from app.core.conversation import ConversationMemory
+from app.core.model_provider import ModelResult
+from app.core.query_analysis import QueryAnalyzer
+from app.core.legacy_rag import ModelQueryGenerator
+from app.core.legacy_cache import RequestToolCache
+from app.knowledge.retrieval import Retriever
 from app.knowledge.stores import DocumentStore
 from app.schemas.common import utc_now
 from app.schemas.documents import DocumentStatus, KnowledgeDocument, SearchableChildUnit
@@ -15,12 +14,12 @@ from uuid import uuid4
 
 def test_simple_and_complex_total_budgets_and_node_limits():
     budget = ModelCallBudget(simple_limit=2, complex_limit=4, node_limits={
-        "query_analysis": 1, "query_rewrite": 1, "context_compression": 1, "collect_answer": 1,
+        "query_analysis": 1, "query_rewrite": 1, "collect_answer": 1,
     })
     budget.start("simple")
     assert budget.reserve("simple", "query_analysis")
     assert budget.reserve("simple", "collect_answer")
-    assert not budget.reserve("simple", "context_compression")
+    assert not budget.reserve("simple", "answer_repair")
     simple = budget.finish("simple")
     assert simple["model_calls"] == 2 and simple["budget_exceeded"]
 
@@ -30,7 +29,7 @@ def test_simple_and_complex_total_budgets_and_node_limits():
         allowed = list(executor.map(lambda _: budget.reserve("complex", "query_rewrite"), range(5)))
     assert sum(allowed) == 1
     assert budget.reserve("complex", "query_analysis")
-    assert budget.reserve("complex", "context_compression")
+    assert budget.reserve("complex", "answer_repair")
     assert budget.reserve("complex", "collect_answer")
     assert not budget.reserve("complex", "collect_answer")
     assert budget.finish("complex")["model_calls"] == 4
@@ -38,7 +37,7 @@ def test_simple_and_complex_total_budgets_and_node_limits():
 
 def test_bounded_cache_ttl_and_eviction(monkeypatch):
     now = [100.0]
-    monkeypatch.setattr("app.rag.cost_control.time.monotonic", lambda: now[0])
+    monkeypatch.setattr("app.core.model_call.time.monotonic", lambda: now[0])
     cache = BoundedCache(max_entries=2, ttl_seconds=10)
     cache.put(("v1", "q1"), [])
     assert cache.get(("v1", "q1")) == (True, [])
@@ -70,10 +69,10 @@ def test_query_analysis_cache_scoped_to_thread_and_index_version(settings):
         def __init__(self):
             self.calls = 0
 
-        def complete(self, messages, *, tools=None):
+        def complete(self, messages, *, tools=None, response_schema=None):
             self.calls += 1
             return ModelResult(
-                '{"is_clear":true,"questions":["PX-200 的阈值是多少？","运行记录保存多久？"],"clarification_needed":null}',
+                '{"is_clear":true,"questions":["PX-200 的阈值是多少？","PX-200 运行记录保存多久？"],"clarification_needed":""}',
                 "ollama", "stub", 10, 10,
             )
 
@@ -83,10 +82,15 @@ def test_query_analysis_cache_scoped_to_thread_and_index_version(settings):
     analyzer = QueryAnalyzer(
         settings, provider, cache=BoundedCache(), index_version=lambda: version[0], request_cache=request_cache,
     )
+    analyzer.budget = build_model_budget(settings)
+    for request_id in ("r1", "r2", "r3", "r4"):
+        analyzer.budget.start(request_id)
     question = "PX-200 的阈值是多少，以及运行记录保存多久？"
     prepared = ConversationMemory().prepare("thread-1", question)
     first = analyzer.analyze(question, prepared, thread_id="thread-1", request_id="r1")
     second = analyzer.analyze(question, prepared, thread_id="thread-1", request_id="r2")
+    assert first.is_clear and len(first.questions) == 2
+    assert first.source == "model" and second.source == "cache"
     assert first.questions == second.questions and provider.calls == 1
     assert second.model_trace is None
     assert request_cache.stats("r2")["query_analysis"] == 1
@@ -141,6 +145,9 @@ def test_query_rewrite_cache_reuses_only_same_thread_and_version(settings):
     generator = ModelQueryGenerator(
         settings, provider, cache=BoundedCache(), index_version=lambda: version[0], request_cache=hits,
     )
+    generator.budget = build_model_budget(settings)
+    for request_id in ("r1", "r2", "r3"):
+        generator.budget.start(request_id)
     first = generator.generate_with_result("PX-200 阈值", ["PX-200 阈值"], thread_id="t", request_id="r1")
     second = generator.generate_with_result("PX-200 阈值", ["PX-200 阈值"], thread_id="t", request_id="r2")
     assert first[0] == second[0]

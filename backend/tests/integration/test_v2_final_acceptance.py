@@ -14,13 +14,14 @@ def test_v2_final_stream_is_traceable_and_redacted(client, auth_headers, pdf_byt
     )
 
     assert response.status_code == 200
-    assert "event: query_rewritten" in response.text
-    assert "event: agent_decision" in response.text
+    assert "event: analysis" in response.text
+    assert "event: node" in response.text
     assert "event: tool_call" in response.text
-    assert "event: hybrid_search" in response.text
+    assert "event: retrieval" in response.text
     assert "event: model_call" in response.text
     assert "event: answer" in response.text
-    assert "event: evaluation" in response.text
+    assert "event: verification" not in response.text
+    assert "event: evaluation" not in response.text
     assert "event: complete" in response.text
     assert '"thread_id": "final-thread"' in response.text
     assert "api_key" not in response.text.lower()
@@ -37,8 +38,11 @@ def test_v2_final_stream_is_traceable_and_redacted(client, auth_headers, pdf_byt
     ).json()["items"]
     assert any(item.get("event") == "tool_call" for item in logs)
     model_calls = [item for item in logs if item.get("event") == "model_call"]
-    assert len(model_calls) == 1
-    assert model_calls[0]["node"] == "collect_answer"
-    assert model_calls[0]["details"]["input_tokens_estimate"] > 0
-    assert model_calls[0]["details"]["provider"] == "fake"
+    assert len(model_calls) == 5
+    assert {item["node"] for item in model_calls} == {"select_tool", "rewrite_query", "orchestrator", "aggregate_answers"}
+    assert all(item["details"]["model_call_id"] for item in model_calls)
+    assert model_calls[0]["details"]["input_tokens"] > 0
+    assert model_calls[0]["details"]["usage_source"] == "estimate"
+    assert all(item["details"]["replayed"] is False for item in model_calls)
+    assert '"model_call_limit": null' in response.text
     assert all(item.get("thread_id") == "final-thread" for item in logs if item.get("thread_id"))
