@@ -15,6 +15,8 @@
 - 离线工程检查与真实模型冒烟、失败题复验、正式题集评测分别对待。未授权不得把测试扩展为下一批正式评测。
 - 回归测试覆盖变更行为和具体失败路径；优先复用 `backend/tests/conftest.py` 里的临时数据、fake provider 和隔离索引。不要新增仅重述实现细节的脆弱测试。
 
+`specs/` 和 `.specify/` 是 Git 忽略的本地开发归档，新克隆不包含这些资料。历史题库与观测检查（`test_v4_calibrated_dataset.py`、`test_v4_formal_regression.py`、`test_v4_gold_dataset.py` 的归档用例，以及 `test_v3_6_q3_regression.py` 的已保存观测用例）仍会读取本地 `specs/`；其中正式回归在收集时即读取题集，缺失时会报错。这些历史检查及 `scripts.validate_v4_gold_dataset`、`scripts.replay_v3_6_q3` 的相关操作，需要另行准备对应的可信本地归档。恢复题集也不代表已具备正式 PDF、索引、原始捕获或真实模型评测授权。
+
 ## 3. 开发与测试命令
 
 从仓库根目录执行 `python start.py` 可一起启动后端和工作台。首次缺少 `backend/.env` 时会从示例创建，填好模型接口配置后重新运行。该入口只监听 `127.0.0.1`，使用本地演示账号 `admin / 123456`，自动准备密码哈希和进程内 JWT 密钥。重启后需重新登录。已单独启动前后端时，先停止对应进程以释放 8000 和 5173。
