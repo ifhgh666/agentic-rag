@@ -171,7 +171,10 @@ def test_offline_sparse_scope_allows_literal_model_but_not_english_prose():
 
 def test_saved_observation_matches_actual_capture_when_available():
     root = Path(__file__).resolve().parents[3]
-    observation = json.loads((root / "specs/003-v3-ollama-rag-quality/v3-6-q3-observation.json").read_text(encoding="utf-8"))
+    path = root / "specs/003-v3-ollama-rag-quality/v3-6-q3-observation.json"
+    if not path.is_file():
+        pytest.skip("缺少本地历史观测归档")
+    observation = json.loads(path.read_text(encoding="utf-8"))
     raw = root / observation["raw_capture"]
     if not raw.is_file():
         pytest.skip("完整运行记录为本机临时产物；固定反例仍可独立重放")

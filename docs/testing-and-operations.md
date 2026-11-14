@@ -15,7 +15,7 @@
 - 离线工程检查与真实模型冒烟、失败题复验、正式题集评测分别对待。未授权不得把测试扩展为下一批正式评测。
 - 回归测试覆盖变更行为和具体失败路径；优先复用 `backend/tests/conftest.py` 里的临时数据、fake provider 和隔离索引。不要新增仅重述实现细节的脆弱测试。
 
-`specs/` 和 `.specify/` 是 Git 忽略的本地开发归档，新克隆不包含这些资料。历史题库与观测检查（`test_v4_calibrated_dataset.py`、`test_v4_formal_regression.py`、`test_v4_gold_dataset.py` 的归档用例，以及 `test_v3_6_q3_regression.py` 的已保存观测用例）仍会读取本地 `specs/`；其中正式回归在收集时即读取题集，缺失时会报错。这些历史检查及 `scripts.validate_v4_gold_dataset`、`scripts.replay_v3_6_q3` 的相关操作，需要另行准备对应的可信本地归档。恢复题集也不代表已具备正式 PDF、索引、原始捕获或真实模型评测授权。
+`specs/` 和 `.specify/` 是 Git 忽略的本地开发归档，新克隆不包含这些资料。历史题库与观测检查会在缺少对应归档时报告跳过，基线检索检查也需要本地 PDF。仓库自带的合成测试仍可执行。运行历史题库校验或真实诊断前，按对应流程准备本地题集、PDF、索引和捕获资料。
 
 ## 3. 开发与测试命令
 

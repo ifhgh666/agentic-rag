@@ -19,6 +19,8 @@ MODEL_CACHE = Path(__file__).resolve().parents[2] / "data" / "models"
 
 
 def test_four_baseline_questions_have_facts_in_top5_child_or_parent(tmp_path):
+    if not SAMPLE_PDF.is_file():
+        pytest.skip("缺少本地基线 PDF 归档")
     if not any(MODEL_CACHE.glob("models--qdrant--paraphrase-multilingual-MiniLM-L12-v2-onnx-Q/*")):
         pytest.skip("本机未缓存 FastEmbed 多语言模型；先按 README 下载后运行")
     settings = Settings(

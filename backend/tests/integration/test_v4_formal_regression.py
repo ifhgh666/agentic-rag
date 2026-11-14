@@ -19,11 +19,16 @@ from scripts.smoke_v3_8 import captures_stable
 ROOT = Path(__file__).resolve().parents[3]
 FEATURE = ROOT / "specs/004-query-clarification-ragas"
 V3 = ROOT / "specs/003-v3-ollama-rag-quality"
-DATASET = json.loads((FEATURE / "gold-cases-v1.json").read_text(encoding="utf-8"))
+DATASET_PATH = FEATURE / "gold-cases-v1.json"
+if not DATASET_PATH.is_file():
+    pytest.skip("历史题集需要本地 Spec Kit 归档", allow_module_level=True)
+DATASET = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
 CASES = DATASET["cases"]
 
 
 def read_json(path):
+    if not path.is_file():
+        pytest.skip(f"缺少本地历史观测归档：{path.name}")
     return json.loads(path.read_text(encoding="utf-8"))
 
 
