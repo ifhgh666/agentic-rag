@@ -2,7 +2,7 @@
 
 上传 PDF，用自然语言提问。文脉会从文档里找相关段落，在答案旁列出来源，方便回看原文、继续追问。
 
-**本地优先** · Ollama 推理 · Qdrant 混合检索 · LangGraph 问答编排
+**本地知识库** · OpenAI 兼容接口 · Qdrant 混合检索 · LangGraph 问答编排
 
 [功能](#功能) · [工作流程](#工作流程) · [项目结构](#项目结构) · [快速开始](#快速开始) · [项目文档](#项目文档)
 
@@ -42,12 +42,13 @@ flowchart LR
     Search --> Answer["生成答案并附来源"]
 ```
 
-后端使用 **Python、FastAPI、LangGraph**，前端使用 **React、TypeScript、Vite**。PDF 经 PyMuPDF4LLM 解析后，使用 fastembed 的本地 ONNX 模型和 BM25 编码。模型默认由 Ollama 提供，也可显式接入 OpenAI 兼容服务。
+后端使用 **Python、FastAPI、LangGraph**，前端使用 **React、TypeScript、Vite**。PDF 经 PyMuPDF4LLM 解析后，使用 fastembed 的本地 ONNX 模型和 BM25 编码。问答模型由你配置的 OpenAI 兼容服务提供。
 
 ## 项目结构
 
 ```text
 agentic-rag/
+├── start.py            # 一键启动前后端
 ├── backend/
 │   ├── app/
 │   │   ├── api/         # 登录、文档管理、聊天 SSE
@@ -63,60 +64,31 @@ agentic-rag/
 
 ## 快速开始
 
-需要 **Python 3.11+**、**Node.js 22+** 和已运行的 [Ollama](https://ollama.com/)。以下命令以 Windows PowerShell 为例。首次准备会下载模型资源。
+需要 **Python 3.11+** 和 **Node.js 22+**。
 
-### 1. 下载项目和本地模型
+### 一键启动
 
 ```powershell
 git clone https://github.com/ifhgh666/agentic-rag.git
 cd agentic-rag
-ollama pull granite4.1:8b
+python start.py
 ```
 
-### 2. 配置并启动后端
+已有仓库时，在仓库根目录运行 `python start.py` 即可。启动器会自动准备依赖和本地嵌入模型，启动前后端。按 `Ctrl+C` 停止。
 
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-if (-not (Test-Path -LiteralPath '.env')) {
-    Copy-Item -LiteralPath '.env.example' -Destination '.env'
-}
-```
+### 首次配置模型接口
 
-在 `backend/.env` 中设置 `ADMIN_PASSWORD_HASH` 和 `JWT_SECRET`。下面第一条命令交互式读取密码并生成哈希，第二条生成随机 JWT 密钥。登录用户名使用 `ADMIN_USERNAME`，示例为 `admin`。
+第一次运行会创建 `backend/.env`。填写下面三项，再运行 `python start.py`。已有模型配置可直接复用。
 
-```powershell
-python -c "from getpass import getpass; from app.auth.security import hash_password; print(hash_password(getpass('Admin password: ')))"
-python -c "import secrets; print(secrets.token_hex(32))"
-```
+| 配置 | 填写内容 |
+| --- | --- |
+| `LLM_BASE_URL` | OpenAI 兼容 API 地址 |
+| `LLM_API_KEY` | 接口密钥 |
+| `LLM_MODEL` | 服务商提供的模型名称 |
 
-首次运行先准备 Dense 嵌入模型，再启动 API。
+### 登录工作台
 
-```powershell
-python -c "from fastembed import TextEmbedding; model = TextEmbedding(model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', cache_dir='data/models'); print(len(next(model.embed(['test']))))"
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
-
-<details>
-<summary>使用 OpenAI 兼容服务</summary>
-
-将 `LLM_PROVIDER` 设为 `openai_compatible`，并在本地 `backend/.env` 填写 `LLM_BASE_URL`、`LLM_API_KEY` 和 `LLM_MODEL`。这种配置可以跳过下载 Ollama 模型，嵌入和索引仍在本地运行。配置字段见 [环境变量示例](backend/.env.example)。
-
-</details>
-
-### 3. 启动前端
-
-另开一个终端，从仓库根目录运行。
-
-```powershell
-cd frontend
-npm ci
-npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
-```
-
-打开 [工作台](http://127.0.0.1:5173/)，用配置的管理员账号登录。上传一份有可选中文字的 PDF（单文件上限 25 MB），等状态变为「已就绪」，再到问答台提问。后端状态可在 [健康检查](http://127.0.0.1:8000/api/health)查看。
+打开 [http://127.0.0.1:5173/](http://127.0.0.1:5173/)，使用本机演示账号 **`admin / 123456`** 登录。上传文本型 PDF（单文件上限 25 MB），等状态变为「已就绪」，再到问答台提问。
 
 ## 项目文档
 
