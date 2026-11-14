@@ -185,13 +185,13 @@ python start.py
 
 ### 首次配置模型接口
 
-第一次运行会创建 `backend/.env`。填写下面三项，再运行 `python start.py`。已有模型配置可直接复用。
+第一次运行会创建 `backend/.env`。本项目通过 OpenAI 兼容接口使用 DeepSeek，当前模型 ID 为 `deepseek-flash`。填写下面三项，再运行 `python start.py`。已有模型配置可直接复用。
 
 | 配置 | 填写内容 |
 | --- | --- |
 | `LLM_BASE_URL` | OpenAI 兼容 API 地址 |
 | `LLM_API_KEY` | 接口密钥 |
-| `LLM_MODEL` | 服务商提供的模型名称 |
+| `LLM_MODEL` | 本项目使用 `deepseek-flash`。其他服务商请填写实际提供的模型 ID。 |
 
 ### 登录工作台
 
