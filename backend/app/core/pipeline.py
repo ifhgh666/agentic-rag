@@ -101,7 +101,7 @@ class RagPipeline:
                     chunk, metadata = data
                     if isinstance(chunk, ToolMessage):
                         observation.register_message(chunk, frame.get('namespace', ()))
-                    if metadata.get('langgraph_node') == 'aggregate_answers' and isinstance(chunk, AIMessageChunk):
+                    if metadata.get('langgraph_node') in {'answer_direct', 'aggregate_answers'} and isinstance(chunk, AIMessageChunk):
                         if isinstance(chunk.content, str):
                             accumulated += chunk.content
                             yield event('answer', {'answer': visible_text(accumulated), 'sources': []})

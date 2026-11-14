@@ -12,7 +12,7 @@ from langgraph.config import get_stream_writer
 from ..rag.tools import estimate_context_tokens
 
 
-NODES = {'summarize_history', 'rewrite_query', 'agent', 'orchestrator', 'tools',
+NODES = {'select_tool', 'summarize_history', 'answer_direct', 'rewrite_query', 'agent', 'orchestrator', 'tools',
          'should_compress_context', 'compress_context', 'fallback_response',
          'collect_answer', 'aggregate_answers'}
 

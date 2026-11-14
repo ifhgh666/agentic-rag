@@ -12,10 +12,16 @@ from tests.fakes.reference_model import ScriptedReferenceModel, basic_resolver
 
 
 def canonical_calls(model):
+    # 018 deliberately adds routing and changes the clarification instruction.
+    # Keep query inputs, SDK bindings and all research/aggregation calls comparable.
     return sorted(json.dumps({'messages': [
-        {'type': message.type, 'name': message.name, 'content': message.content,
+        {'type': message.type, 'name': message.name,
+         'content': '[rewrite instructions]' if message.type == 'system'
+         and 'query rewriting specialist' in str(message.content) else message.content,
          'tool_calls': getattr(message, 'tool_calls', [])} for message in call['messages']],
-        'kwargs': call['kwargs']}, ensure_ascii=False, sort_keys=True) for call in model.calls)
+        'kwargs': call['kwargs']}, ensure_ascii=False, sort_keys=True) for call in model.calls
+        if 'classify whether the latest user request requires the PDF knowledge base'
+        not in str(call['messages'][0].content))
 
 
 @pytest.mark.parametrize('scenario', ['single', 'three', 'over_total_budget', 'compression', 'limit', 'no_tools', 'history'])
@@ -58,7 +64,7 @@ def test_business_messages_calls_answers_and_contexts_match_fixed_upstream(scena
             for index in range(3 if scenario == 'history' else 1):
                 visits = [(len(namespace), tuple(sorted(update))) for namespace, update in engine.stream(
                     {'messages': [HumanMessage(content=f'Question {index}?')]}, config,
-                    stream_mode='updates', subgraphs=True)]
+                    stream_mode='updates', subgraphs=True) if 'select_tool' not in update]
                 result = engine.get_state(config).values
                 results.append({'final': result['messages'][-1].content,
                     'summary': result.get('conversation_summary'),

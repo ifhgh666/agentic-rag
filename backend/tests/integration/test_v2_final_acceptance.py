@@ -38,8 +38,8 @@ def test_v2_final_stream_is_traceable_and_redacted(client, auth_headers, pdf_byt
     ).json()["items"]
     assert any(item.get("event") == "tool_call" for item in logs)
     model_calls = [item for item in logs if item.get("event") == "model_call"]
-    assert len(model_calls) == 4
-    assert {item["node"] for item in model_calls} == {"rewrite_query", "orchestrator", "aggregate_answers"}
+    assert len(model_calls) == 5
+    assert {item["node"] for item in model_calls} == {"select_tool", "rewrite_query", "orchestrator", "aggregate_answers"}
     assert all(item["details"]["model_call_id"] for item in model_calls)
     assert model_calls[0]["details"]["input_tokens"] > 0
     assert model_calls[0]["details"]["usage_source"] == "estimate"

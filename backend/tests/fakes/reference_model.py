@@ -39,8 +39,15 @@ class ScriptedReferenceModel(BaseChatModel):
                 yield ChatGenerationChunk(message=AIMessageChunk(content=text[i:i + 7]))
 
 
+def routing_reply(needs_knowledge: bool):
+    return AIMessage(content='', tool_calls=[{'name': 'ToolRouting', 'id': 'route',
+        'args': {'needs_knowledge': needs_knowledge}}])
+
+
 def basic_resolver(messages, kwargs, call_number):
     system = str(messages[0].content)
+    if 'classify whether the latest user request requires the PDF knowledge base' in system:
+        return routing_reply(True)
     if 'query rewriting specialist' in system:
         text = str(messages[-1].content).split('User Query:\n')[-1]
         return AIMessage(content='', tool_calls=[{'name': 'QueryAnalysis', 'id': 'analysis',

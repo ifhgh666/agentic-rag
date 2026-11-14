@@ -1,5 +1,11 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictBool
+
+
+class ToolRouting(BaseModel):
+    needs_knowledge: StrictBool = Field(
+        description="Whether answering the current user request requires searching the PDF knowledge base."
+    )
 
 class QueryAnalysis(BaseModel):
     is_clear: bool = Field(

@@ -257,7 +257,7 @@ def test_reference_request_does_not_claim_a_legacy_budget_operation(settings):
     before = budget.snapshot("legacy")
     service, model, _ = make_service(settings)
     final, _ = run_turn(service)
-    assert not final["pending"] and len(model.calls) == 4
+    assert not final["pending"] and len(model.calls) == 5
     assert budget.snapshot("legacy") == before
 
 def test_checkpoint_threads_do_not_share_another_requests_history(settings):

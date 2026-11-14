@@ -1,7 +1,7 @@
 import type { ExecutionEvent } from "../../types/api";
 
 export interface Activity { key:string; title:string; event:ExecutionEvent; status:"running"|"completed"|"failed"|"recorded"; }
-export const nodeNames:Record<string,string>={summarize_history:"整理会话历史",rewrite_query:"问题补全与拆分",orchestrator:"研究决策",tools:"执行工具",should_compress_context:"检查研究上下文容量",compress_context:"压缩研究上下文",fallback_response:"研究边界收尾",collect_answer:"收集分支答案",aggregate_answers:"汇总最终答案",diagnostics:"诊断记录"};
+export const nodeNames:Record<string,string>={select_tool:"判断是否需要查询知识库",answer_direct:"直接回答",summarize_history:"整理会话历史",rewrite_query:"问题补全与拆分",orchestrator:"研究决策",tools:"执行工具",should_compress_context:"检查研究上下文容量",compress_context:"压缩研究上下文",fallback_response:"研究边界收尾",collect_answer:"收集分支答案",aggregate_answers:"汇总最终答案",diagnostics:"诊断记录"};
 export const toolNames:Record<string,string>={search_child_chunks:"查找相关资料",retrieve_parent_chunks:"阅读完整章节"};
 export function activities(events:ExecutionEvent[]):Activity[] {
   const rows:Activity[]=[]; const identities=new Map<string,number>();
