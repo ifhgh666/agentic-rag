@@ -1,4 +1,4 @@
-from app.rag.generator import AnswerGenerator, INSUFFICIENT_ANSWER
+from app.core.answering import AnswerGenerator, INSUFFICIENT_ANSWER
 
 
 def test_generator_returns_insufficient_answer_without_context(settings):

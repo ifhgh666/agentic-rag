@@ -1,0 +1,710 @@
+{
+  "schema_version": 1,
+  "dataset_version": "gold-1.0",
+  "status": "reviewed",
+  "source_document": {
+    "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+    "filename": "rag-test-knowledge-document.pdf",
+    "sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+    "page_count": 4,
+    "document_version": "RAG-TEST-001 / 1.0"
+  },
+  "notes": "2026-10-07 当前会话用户明确确认 Q1–Q15 为标准答案集，并确认本批本地 Judge 最多 80 次调用；含 Q2 的立即断开主回路必答点。审核记录由 Codex 根据用户确认登记，不冒称 Codex 自动核对为人工审核。题目、来源、标准答案和必答事实保持候选版本内容；仅适用于当前测试 PDF，不包含真实业务 PDF。",
+  "cases": [
+    {
+      "case_id": "Q1",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "seed_startup",
+      "case_type": "answerable",
+      "question": "设备上电前需要检查哪些内容？",
+      "history_fixture": [
+        {
+          "role": "user",
+          "content": "以下问题都针对已上传的 RAG-TEST-001 版本 1.0 测试 PDF 中的 PX-200。"
+        }
+      ],
+      "reference_answer": "确认输入电源、接地线和负载连接正常；使用合格的万用表核对输入电压处于 198 V 至 242 V、频率处于 49 Hz 至 51 Hz；确认急停按钮已复位、保护指示灯熄灭且液晶面板没有显示故障代码。",
+      "source_spans": [
+        {
+          "page": 2,
+          "section": "2. 上电与启动流程",
+          "source_quote": "设备上电前，操作人员应确认输入电源、接地线和负载连接状态。"
+        },
+        {
+          "page": 2,
+          "section": "2. 上电与启动流程",
+          "source_quote": "使用合格的万用表确认输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。"
+        },
+        {
+          "page": 2,
+          "section": "2. 上电与启动流程",
+          "source_quote": "确认急停按钮已复位，保护指示灯熄灭，液晶面板没有显示故障代码。"
+        }
+      ],
+      "required_facts": [
+        "输入电源、接地线、负载连接",
+        "合格的万用表",
+        "198 V 至 242 V",
+        "49 Hz 至 51 Hz",
+        "急停按钮复位",
+        "保护指示灯熄灭",
+        "无面板故障代码"
+      ],
+      "forbidden_claims": [
+        "在 WAIT 或 FAULT 状态下强行启动"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "notes": "保留原始 Q1；合成历史明确当前 PDF 和设备主题，不是无历史指代用例。"
+    },
+    {
+      "case_id": "Q2",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "seed_overcurrent",
+      "case_type": "answerable",
+      "question": "PX-200 的过流保护阈值是多少？",
+      "history_fixture": [],
+      "reference_answer": "PX-200 的输出电流超过 16 A 并持续 100 ms 时触发过流保护，控制器立即断开主回路。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 过流保护表格",
+          "source_quote": "输出电流超过 16 A 持续 100 ms"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 过流保护表格",
+          "source_quote": "立即断开主回路"
+        }
+      ],
+      "required_facts": [
+        "输出电流超过 16 A",
+        "持续 100 ms",
+        "立即断开主回路"
+      ],
+      "forbidden_claims": [
+        "达到 16 A 即必然触发",
+        "无需持续时间"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human"
+    },
+    {
+      "case_id": "Q3",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "seed_recovery",
+      "case_type": "answerable",
+      "question": "过流保护后如何恢复？",
+      "history_fixture": [
+        {
+          "role": "user",
+          "content": "以下问题都针对已上传的 RAG-TEST-001 版本 1.0 测试 PDF 中的 PX-200。"
+        }
+      ],
+      "reference_answer": "若故障代码为 OC-16，应先断开负载，等待设备完全放电，再检查负载端是否短路；确认负载正常后按确认键清除告警，最后重新执行上电流程。不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "如果故障代码为 OC-16，表示发生过流保护。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "应先断开负载，等待设备完全放电，再检查负载端是否短路。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "确认负载正常后，按确认键清除告警，最后重新执行上电流程。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+        }
+      ],
+      "required_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "forbidden_claims": [
+        "未断开负载或未放电就检查负载端",
+        "只清告警就重启",
+        "在保护原因未排除前旁路保护回路"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "notes": "第 3 页正文优先于第 4 页简化问答表；标准答案不省略断开负载和完全放电。该问题在已明确 PX-200 的合成会话中提问。"
+    },
+    {
+      "case_id": "Q4",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "seed_retention",
+      "case_type": "answerable",
+      "question": "运行记录默认保留多久？",
+      "history_fixture": [
+        {
+          "role": "user",
+          "content": "以下问题都针对已上传的 RAG-TEST-001 版本 1.0 测试 PDF 中的 PX-200。"
+        }
+      ],
+      "reference_answer": "运行记录默认保留三年；超过期限后按先进先出原则删除。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+        }
+      ],
+      "required_facts": [
+        "三年",
+        "超过期限后按先进先出原则删除"
+      ],
+      "forbidden_claims": [
+        "永久保存"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human"
+    },
+    {
+      "case_id": "Q5",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "seed_maintenance",
+      "case_type": "answerable",
+      "question": "设备多久进行一次例行维护？",
+      "history_fixture": [
+        {
+          "role": "user",
+          "content": "以下问题都针对已上传的 RAG-TEST-001 版本 1.0 测试 PDF 中的 PX-200。"
+        }
+      ],
+      "reference_answer": "PX-200 每六个月进行一次例行维护。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "例行维护周期为六个月。"
+        }
+      ],
+      "required_facts": [
+        "每六个月"
+      ],
+      "forbidden_claims": [
+        "每年一次"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human"
+    },
+    {
+      "case_id": "Q6",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "paraphrase_ranges",
+      "case_type": "answerable",
+      "question": "PX-200 接入市电时，电压和频率分别允许在什么区间？",
+      "history_fixture": [],
+      "reference_answer": "输入电压允许范围为 198 V 至 242 V，频率允许范围为 49 Hz 至 51 Hz。",
+      "source_spans": [
+        {
+          "page": 2,
+          "section": "2. 上电与启动流程",
+          "source_quote": "输入电压处于 198 V 至 242 V 范围内，频率处于 49 Hz 至 51 Hz 范围内。"
+        }
+      ],
+      "required_facts": [
+        "198 V 至 242 V",
+        "49 Hz 至 51 Hz"
+      ],
+      "forbidden_claims": [
+        "把额定 220 V / 50 Hz 当作唯一允许值"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human"
+    },
+    {
+      "case_id": "Q7",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "pronoun_followup",
+      "case_type": "answerable",
+      "question": "它多久维护一次？",
+      "history_fixture": [
+        {
+          "role": "user",
+          "content": "PX-200 的过流保护阈值是多少？"
+        },
+        {
+          "role": "assistant",
+          "content": "PX-200 的输出电流超过 16 A 并持续 100 ms 时触发过流保护，控制器立即断开主回路。"
+        }
+      ],
+      "reference_answer": "PX-200 每六个月进行一次例行维护。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "例行维护周期为六个月。"
+        }
+      ],
+      "required_facts": [
+        "PX-200",
+        "每六个月"
+      ],
+      "forbidden_claims": [
+        "无依据改成其他设备"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "notes": "历史是固定测试前置条件，不是系统实测回答；只能用来解析指代，事实须引用 PDF。"
+    },
+    {
+      "case_id": "Q8",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "parallel_questions",
+      "case_type": "answerable",
+      "question": "PX-200 的运行记录默认保留多久，例行维护又隔多久做一次？",
+      "history_fixture": [],
+      "reference_answer": "运行记录默认保留三年，超期按先进先出原则删除；例行维护每六个月进行一次。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+        },
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "例行维护周期为六个月。"
+        }
+      ],
+      "required_facts": [
+        "三年",
+        "先进先出",
+        "每六个月"
+      ],
+      "forbidden_claims": [
+        "只回答其中一项",
+        "混淆三年和六个月"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human"
+    },
+    {
+      "case_id": "Q9",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "clarification_supplement",
+      "case_type": "clarification_flow",
+      "question": "它发生过流后如何恢复？",
+      "history_fixture": [],
+      "reference_answer": "若故障代码为 OC-16，应先断开负载，等待设备完全放电，再检查负载端是否短路；确认负载正常后按确认键清除告警，最后重新执行上电流程。不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "如果故障代码为 OC-16，表示发生过流保护。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "应先断开负载，等待设备完全放电，再检查负载端是否短路。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "确认负载正常后，按确认键清除告警，最后重新执行上电流程。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+        }
+      ],
+      "required_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "forbidden_claims": [
+        "未断开负载或未放电就检查负载端",
+        "只清告警就重启",
+        "在保护原因未排除前旁路保护回路"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "flow_expectation_basis": "阶段 B 澄清契约：首轮缺少对象不检索，补入型号后形成独立问题；事实答案依据 PDF 第 3 页。",
+      "flow_steps": [
+        {
+          "question": "它发生过流后如何恢复？",
+          "action": "auto",
+          "expected_status": "clarification",
+          "expected_relation": "new_question",
+          "expected_questions": [],
+          "expected_pending_query": "它发生过流后如何恢复？",
+          "retrieval_expected": false
+        },
+        {
+          "question": "PX-200",
+          "action": "continue_clarification",
+          "expected_status": "completed",
+          "expected_relation": "clarification",
+          "expected_questions": [
+            "PX-200 发生过流后如何恢复？"
+          ],
+          "expected_pending_query": "",
+          "retrieval_expected": true
+        }
+      ]
+    },
+    {
+      "case_id": "Q10",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "clarification_new_topic",
+      "case_type": "clarification_flow",
+      "question": "它发生过流后如何恢复？",
+      "history_fixture": [],
+      "reference_answer": "运行记录默认保留三年；超过期限后按先进先出原则删除。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "4. 运行记录与维护",
+          "source_quote": "运行记录默认保留三年，超过期限后按先进先出原则删除。"
+        }
+      ],
+      "required_facts": [
+        "三年",
+        "先进先出"
+      ],
+      "forbidden_claims": [
+        "把旧恢复流程拼接进记录保留问题"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "flow_expectation_basis": "阶段 B 澄清契约：明确新题清除旧待办，处理新问题；记录保留事实依据 PDF 第 3 页。",
+      "flow_steps": [
+        {
+          "question": "它发生过流后如何恢复？",
+          "action": "auto",
+          "expected_status": "clarification",
+          "expected_relation": "new_question",
+          "expected_questions": [],
+          "expected_pending_query": "它发生过流后如何恢复？",
+          "retrieval_expected": false
+        },
+        {
+          "question": "PX-200 的运行记录默认保留多久？",
+          "action": "new_question",
+          "expected_status": "completed",
+          "expected_relation": "new_question",
+          "expected_questions": [
+            "PX-200 的运行记录默认保留多久？"
+          ],
+          "expected_pending_query": "",
+          "retrieval_expected": true
+        }
+      ]
+    },
+    {
+      "case_id": "Q11",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "clarification_cancel",
+      "case_type": "clarification_flow",
+      "question": "它发生过流后如何恢复？",
+      "history_fixture": [],
+      "reference_answer": null,
+      "source_spans": [],
+      "required_facts": [],
+      "forbidden_claims": [
+        "取消后继续检索旧问题",
+        "取消时调用问题分析模型"
+      ],
+      "expected_behavior": "cancelled",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "flow_expectation_basis": "阶段 B 接口与状态契约：cancel 清除待办，不检索、不产生普通答案；这是协议验收，不是 PDF 事实题。",
+      "flow_steps": [
+        {
+          "question": "它发生过流后如何恢复？",
+          "action": "auto",
+          "expected_status": "clarification",
+          "expected_relation": "new_question",
+          "expected_questions": [],
+          "expected_pending_query": "它发生过流后如何恢复？",
+          "retrieval_expected": false
+        },
+        {
+          "question": "",
+          "action": "cancel",
+          "expected_status": "cancelled",
+          "expected_relation": null,
+          "expected_questions": [],
+          "expected_pending_query": "",
+          "retrieval_expected": false
+        }
+      ]
+    },
+    {
+      "case_id": "Q12",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "clarification_uncertain",
+      "case_type": "clarification_flow",
+      "question": "它发生过流后如何恢复？",
+      "history_fixture": [],
+      "reference_answer": null,
+      "source_spans": [],
+      "required_facts": [],
+      "forbidden_claims": [
+        "把含糊回复直接累计为已确认事实",
+        "无依据直接进入检索"
+      ],
+      "expected_behavior": "choose_action",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "flow_expectation_basis": "阶段 B 澄清契约：关系不确定时保留原待办并提供补充、新题、取消选项；这是协议验收，不是 PDF 事实题。",
+      "flow_steps": [
+        {
+          "question": "它发生过流后如何恢复？",
+          "action": "auto",
+          "expected_status": "clarification",
+          "expected_relation": "new_question",
+          "expected_questions": [],
+          "expected_pending_query": "它发生过流后如何恢复？",
+          "retrieval_expected": false
+        },
+        {
+          "question": "都可以",
+          "action": "auto",
+          "expected_status": "clarification",
+          "expected_relation": "uncertain",
+          "expected_questions": [],
+          "expected_pending_query": "它发生过流后如何恢复？",
+          "retrieval_expected": false
+        }
+      ]
+    },
+    {
+      "case_id": "Q13",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "missing_document_information",
+      "case_type": "unanswerable",
+      "question": "PX-200 的固件升级下载地址和操作步骤是什么？",
+      "history_fixture": [],
+      "reference_answer": null,
+      "source_spans": [],
+      "required_facts": [],
+      "forbidden_claims": [
+        "编造固件版本",
+        "编造下载地址",
+        "用常识补写升级步骤"
+      ],
+      "expected_behavior": "insufficient_evidence",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "unanswerable_reason": "已读取并目视核对 PDF 全部 4 页；资料没有固件升级下载地址或升级流程。维护接口更新设备参数不能推导成固件升级说明。",
+      "absence_check": {
+        "pages_checked": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "terms": [
+          "固件",
+          "升级",
+          "下载"
+        ]
+      },
+      "notes": "关键词未出现只是支持性检查，不能自动证明所有语义层面的无答案；仍须人工审核。"
+    },
+    {
+      "case_id": "Q14",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "numeric_conflicting_premise",
+      "case_type": "answerable",
+      "question": "有人说 PX-200 超过 15 A 持续 50 ms 就会过流保护。请按这份 PDF 核对正确触发条件。",
+      "history_fixture": [],
+      "reference_answer": "该说法不符合这份 PDF。原文条件是输出电流超过 16 A 并持续 100 ms，触发后立即断开主回路。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 过流保护表格",
+          "source_quote": "输出电流超过 16 A 持续 100 ms"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 过流保护表格",
+          "source_quote": "立即断开主回路"
+        }
+      ],
+      "required_facts": [
+        "纠正用户给出的错误数值",
+        "输出电流超过 16 A",
+        "持续 100 ms",
+        "立即断开主回路"
+      ],
+      "forbidden_claims": [
+        "采纳用户的 15 A / 50 ms",
+        "声称 PDF 同时给出两套冲突阈值"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "notes": "15 A / 50 ms 是明确标注的错误用户前提，不是伪造的 PDF 引文；当前单份 PDF 没有真实的两文档数值冲突。"
+    },
+    {
+      "case_id": "Q15",
+      "dataset_version": "gold-1.0",
+      "document_id": "b8d6bda5-5ff7-4b2c-9e72-1157f199bf8b",
+      "document_sha256": "4F2BC2FC688BC9B6B5645D521960D688482638EBEF0828BD75E1A55759365017",
+      "category": "missing_safety_steps_probe",
+      "case_type": "answerable",
+      "question": "PX-200 出现 OC-16 后的完整恢复步骤是什么？",
+      "history_fixture": [],
+      "reference_answer": "若故障代码为 OC-16，应先断开负载，等待设备完全放电，再检查负载端是否短路；确认负载正常后按确认键清除告警，最后重新执行上电流程。不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。",
+      "source_spans": [
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "如果故障代码为 OC-16，表示发生过流保护。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "应先断开负载，等待设备完全放电，再检查负载端是否短路。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "确认负载正常后，按确认键清除告警，最后重新执行上电流程。"
+        },
+        {
+          "page": 3,
+          "section": "3. 保护功能与故障处理 / 故障排查建议",
+          "source_quote": "不要连续多次重启设备，也不要在保护原因未排除前旁路保护回路。"
+        }
+      ],
+      "required_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "forbidden_claims": [
+        "未断开负载或未放电就检查负载端",
+        "只清告警就重启",
+        "在保护原因未排除前旁路保护回路"
+      ],
+      "expected_behavior": "answer",
+      "review_status": "reviewed",
+      "reviewer": "项目维护者（当前会话用户）",
+      "reviewed_at": "2026-10-07T13:15:43Z",
+      "review_kind": "human",
+      "ordered_facts": [
+        "先断开负载",
+        "等待设备完全放电",
+        "检查负载端是否短路",
+        "确认负载正常",
+        "按确认键清除告警",
+        "重新执行上电流程"
+      ],
+      "negative_response_fixture": {
+        "response": "检查负载端是否短路，确认负载正常后按确认键清除告警，然后重新执行上电流程。",
+        "expected_missing_facts": [
+          "先断开负载",
+          "等待设备完全放电"
+        ],
+        "expected_status": "issue_found"
+      },
+      "notes": "标准答案仍须完整；另附故意漏安全前置步骤的候选回答，供下一阶段验证完整性检查。它不是系统实际生成答案，不在本阶段评分。"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-from app.rag.model_provider import ModelResult
-from app.rag.query_planner import ModelQueryGenerator, RuleBasedQueryGenerator
+from app.core.model_provider import ModelResult
+from app.core.legacy_rag import ModelQueryGenerator, RuleBasedQueryGenerator
 
 
 def test_query_generator_returns_a_new_non_duplicate_query():

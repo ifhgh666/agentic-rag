@@ -1,0 +1,50 @@
+[
+  {
+    "name": "button.json",
+    "url": "https://ui.shadcn.com/r/styles/base-nova/button.json",
+    "fetched": "2026-10-29T08:28:22.721Z",
+    "sha256": "9ba7e870178813f0552b818a913a2792fb500c779e36395740b4973e3025d427"
+  },
+  {
+    "name": "input.json",
+    "url": "https://ui.shadcn.com/r/styles/base-nova/input.json",
+    "fetched": "2026-10-29T08:28:23.118Z",
+    "sha256": "bbad1bba130ac9750a61844eeb8f043e8a710846e07689fa85398b80a46c2741"
+  },
+  {
+    "name": "sheet.json",
+    "url": "https://ui.shadcn.com/r/styles/base-nova/sheet.json",
+    "fetched": "2026-10-29T08:28:23.526Z",
+    "sha256": "72b36d92af7fcbc9bd2d1d4ef0cbc65f4fc8178f7bb2bedaf657460f15011cf4"
+  },
+  {
+    "name": "shadcn-LICENSE.md",
+    "url": "https://raw.githubusercontent.com/shadcn-ui/ui/main/LICENSE.md",
+    "fetched": "2026-10-29T08:28:25.694Z",
+    "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+  },
+  {
+    "name": "geist-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/vercel/geist-font/main/OFL.txt",
+    "fetched": "2026-10-29T08:30:31.910Z",
+    "sha256": "c683bfbcc7e087f5d37a54ef628f10387c451a83ddc459b151403a164ac46c90"
+  },
+  {
+    "name": "geist-regular.woff2",
+    "url": "https://raw.githubusercontent.com/vercel/geist-font/main/fonts/Geist/webfonts/Geist-Regular.woff2",
+    "fetched": "2026-10-29T08:30:32.697Z",
+    "sha256": "12e7c80de776bc74044973a26bb96842ca4bfe9e16fc6128fa5c6420e8e1d8fc"
+  },
+  {
+    "name": "geist-semibold.woff2",
+    "url": "https://raw.githubusercontent.com/vercel/geist-font/main/fonts/Geist/webfonts/Geist-SemiBold.woff2",
+    "fetched": "2026-10-29T08:30:33.413Z",
+    "sha256": "162dcce19c895344a8eeee8482017d975f8e555d90da21d4343e31e8c9334d79"
+  },
+  {
+    "name": "alert-dialog.json",
+    "url": "https://ui.shadcn.com/r/styles/base-nova/alert-dialog.json",
+    "fetched": "2026-10-29T17:39:01.924883+00:00",
+    "sha256": "974543244faee02eb4ea40264b7e0bbda2b01c3f2c369de965d2ac771c57a8af"
+  }
+]

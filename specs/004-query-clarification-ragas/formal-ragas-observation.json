@@ -1,0 +1,2336 @@
+{
+  "schema_version": 1,
+  "dataset_version": "gold-1.0",
+  "capture_verification": {
+    "validated_case_count": 15,
+    "validated_turn_count": 19,
+    "protected_file_count": 67,
+    "protected_hashes_unchanged": true,
+    "cleanup_failure_preserved": true,
+    "answer_rerun": false
+  },
+  "answer_model": "qwen3:4b-instruct",
+  "judge_model": "qwen3:4b-instruct",
+  "independent_judge": false,
+  "judge_call_limit": 80,
+  "per_metric_timeout_seconds": 60,
+  "judge_status": "completed_with_errors",
+  "judge_metadata": {
+    "started_at": "2026-10-07T13:34:48.642365+00:00",
+    "status": "completed_with_errors",
+    "formal_acceptance": false,
+    "duration_ms": 1617424,
+    "dataset_version": "gold-1.0",
+    "judge_configuration": {
+      "temperature": 0,
+      "max_tokens": 1024,
+      "instructor_max_retries": 1,
+      "rating_max_retries": 1,
+      "per_metric_timeout_seconds": 60,
+      "max_http_model_calls": 80,
+      "trust_env": false,
+      "ragas_telemetry": false,
+      "langsmith_tracing": false
+    },
+    "judge_cost": {
+      "model_calls": 80,
+      "prompt_tokens": 109708,
+      "completion_tokens": 2844,
+      "usage_records": 67,
+      "total_tokens": 112552,
+      "cloud_calls": 0,
+      "unknown_usage_calls": 13,
+      "usage_source": "partial_provider"
+    },
+    "independent_judge": false,
+    "metric_error_count": 33,
+    "human_review_status": "pending"
+  },
+  "metric_status_counts": {
+    "scored": 22,
+    "evaluation_error": 33,
+    "not_applicable": 20
+  },
+  "metric_error_counts": {
+    "TimeoutError": 13,
+    "judge_call_budget_exceeded": 15,
+    "answer_pipeline_failed": 5
+  },
+  "fact_metric_coverage": {
+    "eligible_cases": 10,
+    "applicable_metrics": 50,
+    "scored_metrics": 22,
+    "timeout_metrics": 13,
+    "budget_unscored_metrics": 15
+  },
+  "batch_cost": {
+    "local_model_calls": 114,
+    "cloud_calls": 0,
+    "known_prompt_tokens": 147163,
+    "known_completion_tokens": 6114,
+    "known_total_tokens_lower_bound": 153277,
+    "unknown_judge_usage_calls": 13
+  },
+  "judge_case_results": [
+    {
+      "case_id": "Q1",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 45570,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2665,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 2679,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60028,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1946,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 1953,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60016,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2082,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 2089,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60014,
+          "cost": {
+            "model_calls": 3,
+            "prompt_tokens": 2904,
+            "completion_tokens": 167,
+            "usage_records": 2,
+            "total_tokens": 3071,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60008,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q2",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 9485,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1613,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1627,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 47158,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 3616,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 3630,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60008,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2166,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 2173,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60015,
+          "cost": {
+            "model_calls": 5,
+            "prompt_tokens": 5649,
+            "completion_tokens": 330,
+            "usage_records": 4,
+            "total_tokens": 5979,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 42212,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 2879,
+            "completion_tokens": 116,
+            "usage_records": 1,
+            "total_tokens": 2995,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q3",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 10811,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1829,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1843,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 45739,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 3534,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 3548,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 35329,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 3019,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 3033,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60011,
+          "cost": {
+            "model_calls": 4,
+            "prompt_tokens": 4416,
+            "completion_tokens": 356,
+            "usage_records": 3,
+            "total_tokens": 4772,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 47577,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 2868,
+            "completion_tokens": 163,
+            "usage_records": 1,
+            "total_tokens": 3031,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q4",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 7214,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1643,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1657,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 58628,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 4166,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 4180,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60013,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2515,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 2522,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60016,
+          "cost": {
+            "model_calls": 5,
+            "prompt_tokens": 5528,
+            "completion_tokens": 255,
+            "usage_records": 4,
+            "total_tokens": 5783,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 45391,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 3135,
+            "completion_tokens": 87,
+            "usage_records": 1,
+            "total_tokens": 3222,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q5",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 4655,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1503,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1517,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 56811,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 4084,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 4098,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60001,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2234,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 2241,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60013,
+          "cost": {
+            "model_calls": 5,
+            "prompt_tokens": 5520,
+            "completion_tokens": 273,
+            "usage_records": 4,
+            "total_tokens": 5793,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 42907,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 3091,
+            "completion_tokens": 70,
+            "usage_records": 1,
+            "total_tokens": 3161,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q6",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 12029,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1915,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1929,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 58799,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 4178,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 4192,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60009,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 2452,
+            "completion_tokens": 7,
+            "usage_records": 1,
+            "total_tokens": 2459,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 60025,
+          "cost": {
+            "model_calls": 4,
+            "prompt_tokens": 4338,
+            "completion_tokens": 271,
+            "usage_records": 3,
+            "total_tokens": 4609,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 1,
+            "usage_source": "partial_provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 48171,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 3157,
+            "completion_tokens": 109,
+            "usage_records": 1,
+            "total_tokens": 3266,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q7",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 5248,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 1533,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 1547,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 47080,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 3612,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 3626,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 59760,
+          "cost": {
+            "model_calls": 2,
+            "prompt_tokens": 4251,
+            "completion_tokens": 14,
+            "usage_records": 2,
+            "total_tokens": 4265,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "scored",
+          "value": 0.8041666666465626,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 53149,
+          "cost": {
+            "model_calls": 5,
+            "prompt_tokens": 6811,
+            "completion_tokens": 312,
+            "usage_records": 5,
+            "total_tokens": 7123,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "scored",
+          "value": 1,
+          "not_applicable_reason": null,
+          "evaluation_error": null,
+          "duration_ms": 37376,
+          "cost": {
+            "model_calls": 1,
+            "prompt_tokens": 2856,
+            "completion_tokens": 83,
+            "usage_records": 1,
+            "total_tokens": 2939,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q8",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q9",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q10",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q11",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q12",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q13",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "not_applicable",
+          "value": null,
+          "evaluation_error": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q14",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    },
+    {
+      "case_id": "Q15",
+      "metrics": {
+        "answer_accuracy": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_relevance": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "response_groundedness": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_precision": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        },
+        "context_recall": {
+          "status": "evaluation_error",
+          "value": null,
+          "not_applicable_reason": null,
+          "duration_ms": 0,
+          "cost": {
+            "model_calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "usage_records": 0,
+            "total_tokens": 0,
+            "cloud_calls": 0,
+            "unknown_usage_calls": 0,
+            "usage_source": "provider"
+          }
+        }
+      },
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "conclusion": null
+      }
+    }
+  ],
+  "human_review_status": "pending",
+  "formal_acceptance": false,
+  "capture_status": "capture_failed",
+  "case_count": 15,
+  "turn_count": 19,
+  "answer_cost": {
+    "model_calls": 34,
+    "cloud_calls": 0,
+    "prompt_tokens": 37455,
+    "completion_tokens": 3270,
+    "total_tokens": 40725,
+    "duration_ms": 680953
+  },
+  "answer_unknown_usage_calls": 0,
+  "started_at": "2026-10-07T13:21:27.838853+00:00",
+  "completed_at": "2026-10-07T13:32:51.366738+00:00",
+  "cases": [
+    {
+      "case_id": "Q1",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1961,
+        "completion_tokens": 390,
+        "total_tokens": 2351,
+        "duration_ms": 69449,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 4,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1961,
+            "completion_tokens": 390,
+            "total_tokens": 2351,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hit_count": 0,
+            "model_duration_ms": 69356,
+            "duration_ms": 69449,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q2",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2396,
+        "completion_tokens": 132,
+        "total_tokens": 2528,
+        "duration_ms": 41476,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 5,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2396,
+            "completion_tokens": 132,
+            "total_tokens": 2528,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 41406,
+            "duration_ms": 41476,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q3",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1824,
+        "completion_tokens": 208,
+        "total_tokens": 2032,
+        "duration_ms": 35671,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 4,
+      "literal_body_probe": {
+        "is_semantic_verdict": false,
+        "ordered_positions": [
+          37,
+          43,
+          53,
+          63,
+          71,
+          82
+        ]
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1824,
+            "completion_tokens": 208,
+            "total_tokens": 2032,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 35596,
+            "duration_ms": 35671,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q4",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2746,
+        "completion_tokens": 144,
+        "total_tokens": 2890,
+        "duration_ms": 48605,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 6,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2746,
+            "completion_tokens": 144,
+            "total_tokens": 2890,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 48530,
+            "duration_ms": 48605,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q5",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2536,
+        "completion_tokens": 99,
+        "total_tokens": 2635,
+        "duration_ms": 40197,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 5,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2536,
+            "completion_tokens": 99,
+            "total_tokens": 2635,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 40126,
+            "duration_ms": 40197,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q6",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2549,
+        "completion_tokens": 240,
+        "total_tokens": 2789,
+        "duration_ms": 56530,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 5,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2549,
+            "completion_tokens": 240,
+            "total_tokens": 2789,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 56449,
+            "duration_ms": 56530,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q7",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2458,
+        "completion_tokens": 113,
+        "total_tokens": 2571,
+        "duration_ms": 42993,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 5,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2458,
+            "completion_tokens": 113,
+            "total_tokens": 2571,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 42924,
+            "duration_ms": 42993,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q8",
+      "status": "fallback",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2727,
+        "completion_tokens": 222,
+        "total_tokens": 2949,
+        "duration_ms": 58290,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        6,
+        5
+      ],
+      "generation_context_count": 6,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "fallback",
+          "answer_cost": {
+            "prompt_tokens": 2727,
+            "completion_tokens": 222,
+            "total_tokens": 2949,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 4,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 7
+            },
+            "cache_hit_count": 7,
+            "model_duration_ms": 58171,
+            "duration_ms": 58290,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q9",
+      "status": "failed_analysis",
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1912,
+        "completion_tokens": 190,
+        "total_tokens": 2102,
+        "duration_ms": 37314,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "flow_checks": [
+        {
+          "turn_number": 1,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": false,
+          "relation_matches": true,
+          "questions_match_literally": false
+        },
+        {
+          "turn_number": 2,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": true,
+          "relation_matches": false,
+          "questions_match_literally": false
+        }
+      ],
+      "generation_context_count": 0,
+      "literal_body_probe": {
+        "is_semantic_verdict": false,
+        "ordered_positions": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1912,
+            "completion_tokens": 190,
+            "total_tokens": 2102,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 37217,
+            "duration_ms": 37311,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        },
+        {
+          "turn_number": 2,
+          "status": "failed_analysis",
+          "answer_cost": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "usage_source": "provider",
+            "model_calls": 0,
+            "model_call_limit": 2,
+            "cache_hit_count": 0,
+            "model_duration_ms": 0,
+            "duration_ms": 3,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q10",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 4,
+        "cloud_calls": 0,
+        "prompt_tokens": 4812,
+        "completion_tokens": 372,
+        "total_tokens": 5184,
+        "duration_ms": 73693,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "flow_checks": [
+        {
+          "turn_number": 1,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": false,
+          "relation_matches": true,
+          "questions_match_literally": false
+        },
+        {
+          "turn_number": 2,
+          "is_semantic_verdict": false,
+          "status_matches": true,
+          "pending_matches": true,
+          "relation_matches": true,
+          "questions_match_literally": true
+        }
+      ],
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 6,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1912,
+            "completion_tokens": 190,
+            "total_tokens": 2102,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 2,
+            "model_duration_ms": 16384,
+            "duration_ms": 16420,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        },
+        {
+          "turn_number": 2,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2900,
+            "completion_tokens": 182,
+            "total_tokens": 3082,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 2,
+            "model_duration_ms": 57232,
+            "duration_ms": 57273,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q11",
+      "status": "cancelled",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1912,
+        "completion_tokens": 190,
+        "total_tokens": 2102,
+        "duration_ms": 16441,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "flow_checks": [
+        {
+          "turn_number": 1,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": false,
+          "relation_matches": true,
+          "questions_match_literally": false
+        },
+        {
+          "turn_number": 2,
+          "is_semantic_verdict": false,
+          "status_matches": true,
+          "pending_matches": true,
+          "relation_matches": true,
+          "questions_match_literally": true
+        }
+      ],
+      "generation_context_count": 0,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1912,
+            "completion_tokens": 190,
+            "total_tokens": 2102,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 2,
+            "model_duration_ms": 16403,
+            "duration_ms": 16438,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        },
+        {
+          "turn_number": 2,
+          "status": "cancelled",
+          "answer_cost": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "usage_source": "provider",
+            "model_calls": 0,
+            "model_call_limit": 2,
+            "cache_hit_count": 0,
+            "model_duration_ms": 0,
+            "duration_ms": 3,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q12",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 4,
+        "cloud_calls": 0,
+        "prompt_tokens": 4009,
+        "completion_tokens": 379,
+        "total_tokens": 4388,
+        "duration_ms": 55066,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "flow_checks": [
+        {
+          "turn_number": 1,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": false,
+          "relation_matches": true,
+          "questions_match_literally": false
+        },
+        {
+          "turn_number": 2,
+          "is_semantic_verdict": false,
+          "status_matches": false,
+          "pending_matches": false,
+          "relation_matches": false,
+          "questions_match_literally": false
+        }
+      ],
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 5,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1912,
+            "completion_tokens": 190,
+            "total_tokens": 2102,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 2,
+            "model_duration_ms": 15853,
+            "duration_ms": 15892,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        },
+        {
+          "turn_number": 2,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 2097,
+            "completion_tokens": 189,
+            "total_tokens": 2286,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 39085,
+            "duration_ms": 39174,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q13",
+      "status": "fallback",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1791,
+        "completion_tokens": 82,
+        "total_tokens": 1873,
+        "duration_ms": 25262,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 4,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "fallback",
+          "answer_cost": {
+            "prompt_tokens": 1791,
+            "completion_tokens": 82,
+            "total_tokens": 1873,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 25189,
+            "duration_ms": 25262,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q14",
+      "status": "fallback",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 2277,
+        "completion_tokens": 294,
+        "total_tokens": 2571,
+        "duration_ms": 54213,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        5
+      ],
+      "generation_context_count": 4,
+      "literal_body_probe": {
+        "is_semantic_verdict": false
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "fallback",
+          "answer_cost": {
+            "prompt_tokens": 2277,
+            "completion_tokens": 294,
+            "total_tokens": 2571,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hit_count": 0,
+            "model_duration_ms": 54152,
+            "duration_ms": 54213,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "Q15",
+      "status": "completed",
+      "run_error": null,
+      "answer_cost": {
+        "model_calls": 2,
+        "cloud_calls": 0,
+        "prompt_tokens": 1545,
+        "completion_tokens": 215,
+        "total_tokens": 1760,
+        "duration_ms": 25753,
+        "budget_exceeded": false,
+        "usage_source": "provider"
+      },
+      "retrieval_candidate_counts": [
+        6
+      ],
+      "generation_context_count": 2,
+      "literal_body_probe": {
+        "is_semantic_verdict": false,
+        "ordered_positions": [
+          37,
+          43,
+          53,
+          63,
+          71,
+          82
+        ]
+      },
+      "flow_turns": [
+        {
+          "turn_number": 1,
+          "status": "completed",
+          "answer_cost": {
+            "prompt_tokens": 1545,
+            "completion_tokens": 215,
+            "total_tokens": 1760,
+            "usage_source": "provider",
+            "model_calls": 2,
+            "model_call_limit": 2,
+            "calls_by_node": {
+              "collect_answer": 1
+            },
+            "cache_hits": {
+              "request_tool": 1
+            },
+            "cache_hit_count": 1,
+            "model_duration_ms": 25628,
+            "duration_ms": 25753,
+            "budget_exceeded": false,
+            "cloud_calls": 0
+          }
+        }
+      ]
+    }
+  ],
+  "public_record_notice": "真实运行原文已移出公开仓库；历史统计与通过/失败结论保留。"
+}
