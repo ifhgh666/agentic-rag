@@ -12,7 +12,7 @@ def test_reference_service_preserves_explicit_native_model_identity(settings):
     service, model, _ = make_service(settings)
     assert service.model is model
     run_turn(service)
-    assert len(model.calls) == 4
+    assert len(model.calls) == 5
     assert not any(hasattr(service, name) for name in ("memory", "query_analyzer", "model_budget", "generator"))
 
 

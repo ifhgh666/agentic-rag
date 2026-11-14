@@ -5,7 +5,7 @@ from threading import Event
 from langchain_core.messages import AIMessage
 
 from tests.fakes.reference_api import install_model, send, last
-from tests.fakes.reference_model import basic_resolver
+from tests.fakes.reference_model import basic_resolver, routing_reply
 
 
 def test_current_stream_has_cumulative_final_answers_sources_and_observational_usage(client, auth_headers):
@@ -19,13 +19,59 @@ def test_current_stream_has_cumulative_final_answers_sources_and_observational_u
     assert answers[-1]['sources'][0]['document_id'] == str(record.document_id)
     assert answers[-1]['sources'][0]['page_start'] == 2
     usage = last(stream, 'usage')
-    assert usage['model_calls'] == 4 and usage['model_call_limit'] is None
+    assert usage['model_calls'] == 5 and usage['model_call_limit'] is None
     assert usage['total_tokens'] == usage['prompt_tokens'] + usage['completion_tokens']
-    assert usage['calls_by_node'] == {'rewrite_query': 1, 'orchestrator': 2, 'aggregate_answers': 1}
+    assert usage['calls_by_node'] == {'select_tool': 1, 'rewrite_query': 1, 'orchestrator': 2, 'aggregate_answers': 1}
+    assert [data['node'] for name, data in stream if name == 'model_call'][:2] == ['select_tool', 'rewrite_query']
     assert not {'verification', 'evaluation', 'answer_evaluation'}.intersection(name for name, _ in stream)
     observed = [data for _, data in stream if 'loop_protocol_version' in data]
     assert observed and all(data['loop_protocol_version'] == 'reference.v1' and data['replayed'] is False for data in observed)
     assert graph.get_state('reference').values['agent_answers']
+
+
+def test_greeting_streams_direct_answer_without_ready_index_or_retrieval(client, auth_headers):
+    reply = '你好！今天有什么我可以帮你的吗？'
+
+    def respond(messages, kwargs, index):
+        if 'classify whether the latest user request' in str(messages[0].content):
+            assert '你好' in messages[-1].content
+            return routing_reply(False)
+        assert '文脉 · PDF 知识工作台' in messages[0].content
+        assert not kwargs.get('tools')
+        if messages[-1].content != '你好':
+            assert any(message.type == 'ai' and message.content == reply for message in messages)
+        return AIMessage(content=reply)
+
+    graph, _, _ = install_model(client, respond)
+    graph.retriever.index_store.ready = False
+
+    def unexpected_search(*args, **kwargs):
+        raise AssertionError('Direct replies must not access the knowledge base')
+
+    graph.retriever.search_with_cache = unexpected_search
+    for question in ('你好', '你刚才说了什么？'):
+        stream = send(client, auth_headers, question)
+        assert last(stream, 'complete')['status'] == 'completed'
+        answers = [data for name, data in stream if name == 'answer']
+        assert len(answers) > 2
+        assert all(reply.startswith(data['answer']) and not data['sources'] for data in answers)
+        assert answers[-1]['answer'] == reply
+        assert not {'analysis', 'clarification', 'tool_start', 'tool_call', 'retrieval'}.intersection(name for name, _ in stream)
+        assert last(stream, 'usage')['calls_by_node'] == {'select_tool': 1, 'answer_direct': 1}
+        assert not graph.get_state('reference').next
+
+
+def test_invalid_tool_decision_fails_before_query_analysis(client, auth_headers):
+    def invalid_decision(messages, kwargs, index):
+        return AIMessage(content='', tool_calls=[{'name': 'ToolRouting', 'id': 'route',
+            'args': {'needs_knowledge': 'false'}}])
+
+    graph, model, _ = install_model(client, invalid_decision)
+    stream = send(client, auth_headers, '你好')
+    assert last(stream, 'complete')['status'] == 'failed'
+    assert len(model.calls) == 1
+    assert not {'analysis', 'clarification', 'tool_call', 'retrieval'}.intersection(name for name, _ in stream)
+    assert not graph.get_state('reference').next
 
 
 def test_actual_graph_progress_arrives_before_blocked_final_generation_finishes(client):

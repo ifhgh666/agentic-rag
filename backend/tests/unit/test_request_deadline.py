@@ -30,7 +30,7 @@ def test_reference_execution_does_not_enter_legacy_deadline_or_call_runner(setti
         "llm_max_output_tokens": 1})
     service, model, _ = make_service(poisoned)
     final, _ = run_turn(service)
-    assert not final["pending"] and len(model.calls) == 4
+    assert not final["pending"] and len(model.calls) == 5
     assert len(final["state"]["messages"][-1].content) > 1
 
 def test_thread_lock_is_released_after_model_transport_failure(settings):

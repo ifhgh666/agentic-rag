@@ -31,4 +31,4 @@ def test_no_tool_research_gap_is_a_model_answer_without_runtime_replacement(sett
     service, model, _ = make_service(settings, resolver=resolver_for(research=lambda *_: AIMessage(content="Missing recovery conditions.")))
     final, _ = run_turn(service)
     assert final["state"]["agent_answers"][0]["answer"] == "Missing recovery conditions."
-    assert len(model.calls) == 3 and not service.retriever.calls
+    assert len(model.calls) == 4 and not service.retriever.calls

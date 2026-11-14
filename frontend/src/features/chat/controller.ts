@@ -4,7 +4,7 @@ import { chatStore, createTurn, initialSession, type ChatSession, type ChatTurn,
 import type { ChatAction, ExecutionEvent } from "../../types/api";
 
 const statuses = new Set<TurnStatus>(["completed","partial","insufficient","clarification","cancelled","failed"]);
-const nodeProgress:Record<string,string> = { summarize_history:"正在整理会话", rewrite_query:"正在分析问题", orchestrator:"正在分析资料", tools:"正在查找资料", should_compress_context:"正在整理资料", compress_context:"正在整理资料", fallback_response:"正在整理回答", collect_answer:"正在汇总资料", aggregate_answers:"正在生成回答" };
+const nodeProgress:Record<string,string> = { select_tool:"正在判断是否需要查资料", answer_direct:"正在生成回答", summarize_history:"正在整理会话", rewrite_query:"正在分析问题", orchestrator:"正在分析资料", tools:"正在查找资料", should_compress_context:"正在整理资料", compress_context:"正在整理资料", fallback_response:"正在整理回答", collect_answer:"正在汇总资料", aggregate_answers:"正在生成回答" };
 const executionTypes = new Set(["query_rewritten","agent_decision","tool_start","tool_call","runtime_guard","hybrid_search","parent_retrieval","budget","node","model_start","model_call"]);
 
 function project(turn:ChatTurn, event:StreamEvent):ChatTurn {

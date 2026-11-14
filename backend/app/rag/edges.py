@@ -3,6 +3,10 @@ from langgraph.types import Send
 from .graph_state import State, AgentState
 from .graph_state import MAX_ITERATIONS, MAX_TOOL_CALLS
 
+def route_after_history(state: State) -> Literal["rewrite_query", "answer_direct"]:
+    return "rewrite_query" if state["needs_knowledge"] else "answer_direct"
+
+
 def route_after_rewrite(state: State) -> Literal["request_clarification", "agent"]:
     if not state.get("questionIsClear", False):
         decision = "request_clarification"

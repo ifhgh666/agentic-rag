@@ -34,18 +34,21 @@
 
 `main.build_services` 装配 `RagPipeline(AgentGraphService(settings, retriever, documents), logger, diagnostics)`。HTTP 入口把动作与问题交给 pipeline；pipeline 只投影事件/可见答案/来源/用量，会话模块负责动作、锁和 checkpoint，实际语义节点与路由在 rag。正常参考图直接使用原生模型，不经 ModelCallRunner、旧 QueryAnalyzer/AnswerGenerator 或旧 ConversationMemory。
 
-主图由 `create_agent_graph(llm, tools_list)` 构造：summarize_history → rewrite_query → 澄清暂停或 Send 分支研究 → aggregate_answers。单问也统一聚合。研究子图显式包含 orchestrator、tools、should_compress_context、compress_context、fallback_response、collect_answer；工具之后检查容量，必要时模型压缩后继续研究。模型决定请求工具或作答，程序按图和工具契约执行，不把被动日志当成决策入口。
+主图由 `create_agent_graph(llm, tools_list)` 构造。新消息先经过 select_tool，整理历史后进入 answer_direct 或 rewrite_query。改写后澄清暂停或 Send 分支研究，再经 aggregate_answers 统一聚合。研究子图显式包含 orchestrator、tools、should_compress_context、compress_context、fallback_response、collect_answer；工具之后检查容量，必要时模型压缩后继续研究。模型决定请求工具或作答，程序按图和工具契约执行。见 [018 聊天分流契约](../specs/018-tool-routing/contracts/chat-routing.md)。
 
 每分支保留 8 个工具请求、10 次研究迭代，图递归 50、近期消息 4、压缩阈值 2000/0.9，以 `rag/graph_state.py` 为准。旧 8/12 总模型配额、300/120 秒应用截止及旧输入准入退出正常路径；不承诺替代墙钟上限。兼容模型入口显式 function_calling，Ollama 沿用当前 SDK 默认；精确 deepseek-flash 的正常实例默认关闭思考，见 [传输契约](../specs/016-reference-agent-semantics/contracts/model-transport.md)。
 
-checkpoint 是在线历史/摘要/pending 的事实来源，auto/continue 支持补充，new/cancel 清理待办；会话在进程内，重启会丢失。研究/历史摘要不进入答案区，只有最终聚合正文进入 answer。来源与本次真实工具记录匹配不证明答案所有语义正确；用量只统计，model_call_limit=null。具体消息与动作见 [聊天契约](../specs/016-reference-agent-semantics/contracts/chat.md)。
+checkpoint 保存在线历史、摘要与 pending，auto/continue 直接恢复检索改写，new/cancel 清理待办；会话在进程内，重启会丢失。直接回答与最终聚合正文进入 answer，直接回答的来源为空。用量只统计，model_call_limit=null。既有消息与动作见 [聊天契约](../specs/016-reference-agent-semantics/contracts/chat.md)。
 
 ```mermaid
 flowchart TD
     API[chat API / SSE] --> P[RagPipeline：公开交付]
     P --> S[AgentGraphService：动作与 checkpoint]
-    S --> H[summarize_history]
-    H --> Q[rewrite_query]
+    S --> K[select_tool]
+    K --> H[summarize_history]
+    H -->|普通对话| B[answer_direct]
+    B --> P
+    H -->|需要知识库| Q[rewrite_query]
     Q -->|需澄清| C[保存 pending 并暂停]
     C -->|补充后恢复| Q
     Q -->|清楚 / Send| R[研究子图：模型、工具、压缩、继续]
@@ -56,7 +59,7 @@ flowchart TD
     P --> D[有界诊断移交 / 独立 worker]
 ```
 
-诊断由 `observability/diagnostics.py` 独立承担，lifespan 管理 worker；pipeline 仅移交有界快照。queued 不等于已保存，诊断失败不改变问答或 checkpoint。SSE 使用有界队列，断开后停止消费，当前 SDK 调用仍可能等待；不能承诺立即终止模型。当前实现及运行证据以 016 报告为准，历史检查结果不能当作本轮通过声明。
+诊断由 `observability/diagnostics.py` 独立承担，lifespan 管理 worker；pipeline 仅移交有界快照。queued 不等于已保存，诊断失败不改变问答或 checkpoint。SSE 使用有界队列，断开后停止消费，当前 SDK 调用仍可能等待；不能承诺立即终止模型。
 
 ### 独立旧能力与历史资料
 

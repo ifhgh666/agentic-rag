@@ -24,7 +24,7 @@ def test_research_calls_can_exceed_old_twelve_call_request_cap(settings):
         return tool_reply(("search_child_chunks", {"query": str(n)})) if n < 4 else AIMessage(content="conclusion")
     service, model, _ = make_service(settings, resolver=resolver_for(questions=["a", "b", "c"], research=research))
     final, _ = run_turn(service)
-    assert not final["pending"] and len(model.calls) == 17
+    assert not final["pending"] and len(model.calls) == 18
     assert len(service.retriever.calls) == 12
     assert len(final["state"]["agent_answers"]) == 3
 

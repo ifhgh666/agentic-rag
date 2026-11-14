@@ -21,7 +21,10 @@ class FakeReferenceModel(BaseChatModel):
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         prompt = str(messages[0].content)
-        if 'query rewriting specialist' in prompt:
+        if 'classify whether the latest user request requires the PDF knowledge base' in prompt:
+            reply = AIMessage(content='', tool_calls=[{'name': 'ToolRouting', 'id': 'fake-route',
+                'args': {'needs_knowledge': True}}])
+        elif 'query rewriting specialist' in prompt:
             current = str(messages[-1].content)
             question = current.split('User Query:\n')[-1] if 'User Query:\n' in current else current
             reply = AIMessage(content='', tool_calls=[{'name': 'QueryAnalysis', 'id': 'fake-analysis',

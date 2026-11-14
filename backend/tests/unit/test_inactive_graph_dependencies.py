@@ -13,7 +13,7 @@ def test_normal_graph_never_constructs_legacy_services(settings, monkeypatch, ow
     monkeypatch.setattr(getattr(owner, name), "__init__", forbidden)
     service, model, _ = make_service(settings)
     final, _ = run_turn(service)
-    assert not final["pending"] and len(model.calls) == 4
+    assert not final["pending"] and len(model.calls) == 5
 
 def test_reference_branch_dispatch_contains_no_legacy_lease_or_procedure_policy():
     sends = route_after_rewrite({"questionIsClear": True, "rewrittenQuestions": ["a", "b"],

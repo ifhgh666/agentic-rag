@@ -2,7 +2,7 @@ from langchain_core.messages import AIMessage
 import pytest
 
 from tests.fakes.reference_api import install_model, send, last
-from tests.fakes.reference_model import basic_resolver
+from tests.fakes.reference_model import basic_resolver, routing_reply
 from tests.fakes.reference_helpers import make_service, run_turn, resolver_for, analysis_reply
 
 
@@ -21,9 +21,14 @@ def test_pending_resumes_with_default_or_explicit_supplement(client, auth_header
     graph, model, _ = install_model(client, clarification_resolver)
     first = send(client, auth_headers, '它的电压是多少？', thread=action)
     assert last(first, 'complete')['status'] == 'clarification'
+    assert last(first, 'clarification')['question'] == '请说明具体设备型号。'
+    assert [data['node'] for name, data in first if name == 'model_call'] == ['select_tool', 'rewrite_query']
+    assert not {'tool_call', 'retrieval'}.intersection(name for name, _ in first)
     assert graph.get_state(action).next == ('request_clarification',)
     second = send(client, auth_headers, '设备是PX-200', thread=action, action=action)
     assert last(second, 'complete')['status'] == 'completed'
+    assert 'select_tool' not in last(second, 'usage')['calls_by_node']
+    assert last(second, 'answer')['sources']
     assert not graph.get_state(action).next
     entry = [call for call in model.calls if 'query rewriting specialist' in str(call['messages'][0].content)]
     context = entry[-1]['messages'][-1].content
@@ -58,6 +63,22 @@ def test_new_question_clears_pending_before_its_model_failure(client, auth_heade
     assert graph.get_state('reference').values['pendingQuery'] == ''
 
 
+def test_explicit_new_question_can_reply_directly_after_clearing_pending(client, auth_headers):
+    graph, model, _ = install_model(client, clarification_resolver)
+    assert last(send(client, auth_headers, '它的电压？'), 'complete')['status'] == 'clarification'
+    def respond(messages, kwargs, index):
+        if 'classify whether the latest user request' in str(messages[0].content):
+            assert '它的电压' not in messages[-1].content
+            return routing_reply(False)
+        return AIMessage(content='你好！')
+    model.resolver = respond
+    stream = send(client, auth_headers, '你好', action='new_question')
+    assert last(stream, 'clarification')['pending'] is False
+    assert last(stream, 'complete')['status'] == 'completed'
+    assert last(stream, 'answer')['answer'] == '你好！'
+    assert graph.get_state('reference').values['pendingQuery'] == ''
+
+
 def test_same_thread_busy_other_threads_independent_and_invalid_actions_are_clear(client, auth_headers):
     graph, _, _ = install_model(client, clarification_resolver)
     with graph.request('busy'):
@@ -68,9 +89,10 @@ def test_same_thread_busy_other_threads_independent_and_invalid_actions_are_clea
     assert last(send(client, auth_headers, '', thread='absent', action='cancel'), 'error')['code'] == 'THREAD_NOT_FOUND'
 
 
-@pytest.mark.parametrize('failed_node', ['rewrite', 'research', 'aggregate'])
+@pytest.mark.parametrize('failed_node', ['routing', 'rewrite', 'research', 'aggregate'])
 def test_failed_execution_is_not_a_pending_clarification(client, auth_headers, failed_node):
-    markers = {'rewrite': 'query rewriting specialist', 'research': 'document-grounded research assistant',
+    markers = {'routing': 'classify whether the latest user request', 'rewrite': 'query rewriting specialist',
+               'research': 'document-grounded research assistant',
                'aggregate': 'final-answer synthesizer'}
     def failing(messages, kwargs, index):
         if markers[failed_node] in str(messages[0].content):
@@ -79,6 +101,8 @@ def test_failed_execution_is_not_a_pending_clarification(client, auth_headers, f
     graph, model, _ = install_model(client, failing)
     first = send(client, auth_headers, 'First question')
     assert last(first, 'complete')['status'] == 'failed'
+    if failed_node == 'routing':
+        assert not {'analysis', 'clarification', 'tool_call', 'retrieval'}.intersection(name for name, _ in first)
     before = len(model.calls)
     rejected = send(client, auth_headers, 'Supplement', action='continue_clarification')
     assert last(rejected, 'error')['code'] == 'NO_PENDING_QUERY'
@@ -89,6 +113,8 @@ def test_failed_execution_is_not_a_pending_clarification(client, auth_headers, f
     analysis = last(second, 'analysis')
     assert analysis['relation'] == 'new_question'
     assert analysis['questions'] == ['Second standalone question']
+    if failed_node == 'routing':
+        assert 'First question' not in model.calls[before]['messages'][-1].content
     assert not graph.get_state('reference').next
 
 

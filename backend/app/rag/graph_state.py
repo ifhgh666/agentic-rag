@@ -15,6 +15,7 @@ def append_unique(existing: List[str], new: List[str]) -> List[str]:
 
 class State(MessagesState):
     """State for main agent graph"""
+    needs_knowledge: bool
     questionIsClear: bool = False
     conversation_summary: str = ""
     originalQuery: str = ""
