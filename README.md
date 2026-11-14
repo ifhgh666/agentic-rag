@@ -28,18 +28,46 @@
 
 ## 技术栈
 
-| 层 | 使用的技术 | 用途 |
-| --- | --- | --- |
-| 前端应用 | **React 18 · TypeScript · Vite 6** | 登录、连续对话和知识库页面。 |
-| 界面与交互 | **Tailwind CSS 4 · Base UI · Motion · Lucide** | 样式、可访问组件、动效和图标。 |
-| 状态与答案渲染 | **Zustand · react-markdown · remark-gfm** | 会话状态、流式答案、Markdown 表格与代码。 |
-| 后端 API | **Python 3.11+ · FastAPI · Uvicorn · Pydantic** | REST 接口、数据校验和 SSE 实时事件。 |
-| Agent 编排 | **LangGraph · LangChain Core** | 模型判断工具需求，组织澄清、检索、多轮研究与答案汇总。 |
-| PDF 处理 | **PyMuPDF · PyMuPDF4LLM** | 提取文本与文档结构，转换为 Markdown，供父子分块使用。 |
-| 本地嵌入 | **fastembed · ONNX · 多语言 MiniLM** | 默认使用 `paraphrase-multilingual-MiniLM-L12-v2`，生成 384 维向量。 |
-| 混合检索 | **Qdrant · Dense 向量 · BM25** | 在本地持久化索引，通过 DBSF 融合两路召回结果。 |
-| 模型接入 | **OpenAI 兼容 API · langchain-openai** | 接入配置的问答模型，支持结构化输出和工具调用。 |
-| 认证与测试 | **PyJWT · pwdlib · pytest · Vitest · jsdom** | 登录认证、密码哈希，以及后端与前端自动化验证。 |
+**Agent 与检索**
+
+![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langgraph&logoColor=white)
+![LangChain Core](https://img.shields.io/badge/LangChain_Core-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?style=flat-square&logo=qdrant&logoColor=white)
+![ONNX](https://img.shields.io/badge/ONNX-005CED?style=flat-square&logo=onnx&logoColor=white)
+
+LangGraph 编排模型与工具循环，Qdrant 融合 **Dense + BM25** 检索，fastembed 在本地运行 ONNX 嵌入模型。
+
+**后端与文档**
+
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![PyMuPDF4LLM](https://img.shields.io/badge/PyMuPDF4LLM-475569?style=flat-square)
+
+FastAPI 提供 API 与 SSE，PyMuPDF4LLM 解析文本型 PDF，问答模型通过 **OpenAI 兼容接口**接入。
+
+**前端界面**
+
+![React 18](https://img.shields.io/badge/React-18-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vite 6](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-0F172A?style=flat-square&logo=tailwindcss&logoColor=38BDF8)
+
+React + TypeScript 构建问答台与知识库，Vite 负责开发和构建，Tailwind CSS 统一界面样式。
+
+<details>
+<summary>更多依赖与实现细节</summary>
+
+| 模块 | 技术与实现 |
+| --- | --- |
+| 组件与交互 | Base UI · Motion · Lucide |
+| 状态与渲染 | Zustand · react-markdown · remark-gfm |
+| API 与认证 | Uvicorn · Pydantic · PyJWT · pwdlib |
+| PDF 与分块 | PyMuPDF · PyMuPDF4LLM · Parent/Child 分块 |
+| 嵌入与融合 | 多语言 MiniLM，默认 `paraphrase-multilingual-MiniLM-L12-v2`，384 维向量；DBSF 融合 |
+| 模型适配 | langchain-openai · 结构化输出 · 原生工具调用 |
+| 自动化测试 | pytest · Vitest · jsdom |
+
+</details>
 
 ## 工作流程
 
@@ -59,47 +87,68 @@ flowchart LR
 ### 主图：消息分流与任务编排
 
 ```mermaid
-flowchart TD
-    Message["用户消息与会话上下文"] --> Select["select_tool<br/>模型判断是否需要知识库"]
-    Select --> History["summarize_history<br/>按需摘要历史，重置本轮分支答案"]
-    History --> Needs{"需要知识库？"}
-    Needs -->|否| Direct["answer_direct<br/>模型直接回答"]
-    Needs -->|是| Rewrite["rewrite_query<br/>改写、拆分子问题并判断信息充分性"]
-    Rewrite --> Clear{"信息充分？"}
-    Clear -->|否| Pending["request_clarification 前暂停<br/>checkpoint 保存原问题与补充"]
-    Pending -->|用户补充后恢复| Rewrite
-    Pending -.->|开始新问题，清除待办| Select
-    Pending -->|取消| Cancel["清除待办并结束<br/>不调用模型"]
-    Clear -->|是| Dispatch["Send 并行分发<br/>每个子问题独立研究"]
-    Dispatch --> Research["agent · 研究子图<br/>模型与工具循环，见下图"]
-    Research --> Aggregate["aggregate_answers<br/>等待分支完成，按子问题顺序统一聚合"]
-    Direct --> Output["SSE 交付答案与来源"]
-    Aggregate --> Output
+---
+config:
+  flowchart:
+    nodeSpacing: 24
+    rankSpacing: 24
+    padding: 10
+---
+flowchart LR
+    Route["模型分流<br/>历史整理"] -->|普通对话| Direct["直接回答"]
+    Route -->|知识库问题| Rewrite{"改写与拆分<br/>信息充分？"}
+    Rewrite -->|是| Research["Send 并行研究<br/>独立子问题"]
+    Research --> Aggregate["按序统一聚合"]
+    Aggregate --> Output["SSE 交付"]
+    Direct --> Output
+    Rewrite -->|否| Pending["澄清暂停<br/>checkpoint"]
+    Pending -->|补充后恢复| Rewrite
+    Pending -.->|新问题| Route
+    Pending -->|取消| Cancel["清除待办<br/>结束"]
 ```
 
-待补充消息在同一会话恢复问题分析；显式开始新问题时重新进行工具需求判断。直接回答的来源为空，单个子问题的研究结果也会经过最终聚合。
+新消息先由模型判断工具需求，再按需摘要历史并重置本轮分支答案。待补充消息在同一会话恢复问题分析；开始新问题或取消会清除待办，取消不调用模型。直接回答的来源为空，单个子问题的研究结果也会经过最终聚合。
 
 ### 研究子图：模型与工具循环
 
 ```mermaid
-flowchart TD
-    Question["单个子问题与独立分支状态"] --> Orchestrator["orchestrator<br/>模型选择继续研究或作答"]
-    Orchestrator --> Calls{"返回工具调用？"}
-    Calls -->|无| Collect["collect_answer<br/>收集分支答案及已检索上下文"]
-    Calls -->|有| Budget{"迭代已达 10 次<br/>或累计工具请求超过 8 次？"}
-    Budget -->|是| Fallback["fallback_response<br/>模型基于已有资料生成收尾答案"]
-    Fallback --> Collect
-    Budget -->|否| Tools["tools · ToolNode<br/>search_child_chunks<br/>retrieve_parent_chunks"]
-    Tools --> Check{"should_compress_context<br/>上下文超过动态阈值？"}
+---
+config:
+  flowchart:
+    nodeSpacing: 24
+    rankSpacing: 24
+    padding: 10
+---
+flowchart LR
+    Orchestrator{"模型决策<br/>请求工具？"} -->|否，作答| Collect["收集分支答案<br/>回传主图"]
+    Orchestrator -->|是| Budget{"未触及<br/>研究边界？"}
+    Budget -->|是| Tools["执行工具<br/>搜索子块 / 读取父块"]
+    Tools --> Check{"上下文需要<br/>压缩？"}
     Check -->|否，继续研究| Orchestrator
-    Check -->|是| Compress["compress_context<br/>模型压缩，保留检索标识并清理旧消息"]
+    Check -->|是| Compress["模型压缩上下文<br/>保留检索标识"]
     Compress --> Orchestrator
-    Collect --> Return["回传主图，参与 aggregate_answers"]
+    Budget -->|否| Fallback["基于已有资料<br/>生成收尾答案"]
+    Fallback --> Collect
 ```
 
 - **两种检索工具**：`search_child_chunks` 通过 Dense + BM25 搜索子块；`retrieve_parent_chunks` 读取完整父块，补充章节上下文。研究提示要求首轮先搜索子块，后续由模型决定继续搜索、读取父块或回答。
 - **两类摘要**：主图整理会话历史；研究子图在工具执行后检查上下文容量，超过动态阈值时压缩研究记录，再回到模型继续决策。
-- **分支边界**：计数包含当前模型回复中的工具请求。触及上图边界时，本批工具不执行，转为收尾；没有工具请求时直接收集答案。摘要、压缩、收尾和聚合的模型调用另行发生。
+- **分支边界**：计数包含当前模型回复中的工具请求。存在工具请求时，若迭代数达到 **10** 或累计工具请求超过 **8**，本批工具不执行，转为收尾；没有工具请求时直接收集答案。摘要、压缩、收尾和聚合的模型调用另行发生。
+
+<details>
+<summary>图中步骤与源码节点</summary>
+
+| 图中步骤 | 源码节点 |
+| --- | --- |
+| 模型分流 → 历史整理 | `select_tool` → `summarize_history` |
+| 直接回答 / 改写与拆分 | `answer_direct` / `rewrite_query` |
+| 澄清暂停与恢复 | `request_clarification` 前中断，补充后恢复改写 |
+| 并行研究 → 统一聚合 | `Send("agent", ...)` → `aggregate_answers` |
+| 模型决策 → 工具执行 | `orchestrator` → `tools`（ToolNode） |
+| 上下文检查 → 模型压缩 | `should_compress_context` → `compress_context`，压缩后清理旧消息 |
+| 收尾 → 收集分支答案 | `fallback_response` → `collect_answer`，携带已检索上下文回传 |
+
+</details>
 
 图与当前实现对应：[图装配](backend/app/rag/graph.py)、[节点](backend/app/rag/nodes.py)、[条件路由](backend/app/rag/edges.py)、[工具](backend/app/rag/tools.py)和[会话恢复](backend/app/core/reference_session.py)。
 
