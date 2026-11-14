@@ -4,7 +4,7 @@
 
 **本地知识库** · OpenAI 兼容接口 · Qdrant 混合检索 · LangGraph 问答编排
 
-[功能](#功能) · [工作流程](#工作流程) · [项目结构](#项目结构) · [快速开始](#快速开始) · [项目文档](#项目文档)
+[功能](#功能) · [技术栈](#技术栈) · [工作流程](#工作流程) · [项目结构](#项目结构) · [快速开始](#快速开始) · [项目文档](#项目文档)
 
 ![文脉问答台显示关于测试装置的回答、PDF 来源，以及查看原文和执行过程的入口](docs/assets/wenmai-chat.png)
 
@@ -26,6 +26,21 @@
 | 证据回看 | 查看命中的文件、章节和原文片段。索引记录包含页码时，来源会带上页码。 |
 | 执行过程 | 展开查看实际的模型调用和检索步骤，便于理解答案依据。 |
 
+## 技术栈
+
+| 层 | 使用的技术 | 用途 |
+| --- | --- | --- |
+| 前端应用 | **React 18 · TypeScript · Vite 6** | 登录、连续对话和知识库页面。 |
+| 界面与交互 | **Tailwind CSS 4 · Base UI · Motion · Lucide** | 样式、可访问组件、动效和图标。 |
+| 状态与答案渲染 | **Zustand · react-markdown · remark-gfm** | 会话状态、流式答案、Markdown 表格与代码。 |
+| 后端 API | **Python 3.11+ · FastAPI · Uvicorn · Pydantic** | REST 接口、数据校验和 SSE 实时事件。 |
+| Agent 编排 | **LangGraph · LangChain Core** | 模型判断工具需求，组织澄清、检索、多轮研究与答案汇总。 |
+| PDF 处理 | **PyMuPDF · PyMuPDF4LLM** | 提取文本与文档结构，转换为 Markdown，供父子分块使用。 |
+| 本地嵌入 | **fastembed · ONNX · 多语言 MiniLM** | 默认使用 `paraphrase-multilingual-MiniLM-L12-v2`，生成 384 维向量。 |
+| 混合检索 | **Qdrant · Dense 向量 · BM25** | 在本地持久化索引，通过 DBSF 融合两路召回结果。 |
+| 模型接入 | **OpenAI 兼容 API · langchain-openai** | 接入配置的问答模型，支持结构化输出和工具调用。 |
+| 认证与测试 | **PyJWT · pwdlib · pytest · Vitest · jsdom** | 登录认证、密码哈希，以及后端与前端自动化验证。 |
+
 ## 工作流程
 
 ```mermaid
@@ -41,8 +56,6 @@ flowchart LR
     Index --> Search
     Search --> Answer["生成答案并附来源"]
 ```
-
-后端使用 **Python、FastAPI、LangGraph**，前端使用 **React、TypeScript、Vite**。PDF 经 PyMuPDF4LLM 解析后，使用 fastembed 的本地 ONNX 模型和 BM25 编码。问答模型由你配置的 OpenAI 兼容服务提供。
 
 ## 项目结构
 
