@@ -53,6 +53,22 @@ function emitAnswer(emit: (event: StreamEvent) => void) {
 }
 
 describe("澄清交互", () => {
+  it("直接回复显示为普通答案，不出现知识库澄清", async () => {
+    mockStream.mockImplementationOnce(async (_q, _t, emit) => {
+      const identity = { request_id: "r", thread_id: "t" };
+      emit({ type: "model_start", data: { ...identity, node: "select_tool", event: "model_start" } });
+      emit({ type: "model_start", data: { ...identity, node: "answer_direct", event: "model_start" } });
+      emit({ type: "answer", data: { ...identity, answer: "你好！有什么可以帮你？", sources: [] } });
+      emit({ type: "complete", data: { ...identity, status: "completed" } });
+    });
+    await input("你好"); await submit();
+    expect(container.querySelector(".answer-text")?.textContent).toBe("你好！有什么可以帮你？");
+    expect(container.querySelector(".clarification-card")).toBeNull();
+    expect(container.querySelector(".source-strip")).toBeNull();
+    expect(container.textContent).toContain("判断是否需要查询知识库");
+    expect(container.textContent).toContain("直接回答");
+  });
+
   it.each(["next_request", "new_session"])("原文按轮隔离，新会话清除，场景%s", async (reset) => {
     const child = { child_id: "c", parent_id: "p", document_id: "d", filename: "设备.pdf", section_title: "恢复", score: 0.8, content_preview: "旧child预览", text: "旧child完整原文" };
     const nextChild = { ...child, child_id: "c2", content_preview: "第二次预览", text: "第二个child原文" };

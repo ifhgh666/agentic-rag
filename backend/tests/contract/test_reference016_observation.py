@@ -28,8 +28,8 @@ def test_actual_request_logs_link_model_and_tool_events(client, auth_headers):
     request_id = last(stream, 'complete')['request_id']
     logs = client.get('/api/logs', headers=auth_headers, params={'request_id': request_id}).json()['items']
     model_events = [row for row in logs if row.get('event') == 'model_call']
-    assert len(model_events) == 4
-    assert {row['node'] for row in model_events} == {'rewrite_query', 'orchestrator', 'aggregate_answers'}
+    assert len(model_events) == 5
+    assert {row['node'] for row in model_events} == {'select_tool', 'rewrite_query', 'orchestrator', 'aggregate_answers'}
     assert all(row['details']['model_call_id'] and row['thread_id'] == 'reference' for row in model_events)
     assert any(row.get('event') == 'tool_call' and row['details']['tool_call_id'] == 'search' for row in logs)
 
@@ -87,7 +87,7 @@ def test_native_parallel_branches_keep_both_sources_despite_reused_tool_ids(clie
     assert {row['filename'] for row in sources} == {'one.pdf', 'two.pdf'}
     assert {row['filename'] for row in last(stream, 'retrieval')['results']} == {'one.pdf', 'two.pdf'}
     assert len([data for name, data in stream if name == 'tool_call']) == 2
-    assert last(stream, 'usage')['model_calls'] == 6
+    assert last(stream, 'usage')['model_calls'] == 7
 
 
 def test_api_does_not_apply_old_request_or_per_model_deadlines(client, auth_headers):
@@ -101,7 +101,7 @@ def test_api_does_not_apply_old_request_or_per_model_deadlines(client, auth_head
     graph.settings.llm_max_output_tokens = 1
     stream = send(client, auth_headers)
     assert last(stream, 'complete')['status'] == 'completed'
-    assert last(stream, 'usage')['model_calls'] == 4
+    assert last(stream, 'usage')['model_calls'] == 5
     assert last(stream, 'usage')['duration_ms'] > 1
     assert len(last(stream, 'answer')['answer']) > 1
 

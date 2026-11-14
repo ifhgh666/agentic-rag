@@ -13,13 +13,13 @@ def test_independent_research_branches_actually_execute_in_parallel(settings):
     final, _ = run_turn(service, "three needs")
     answers = sorted(final["state"]["agent_answers"], key=lambda r: r["index"])
     assert [(a["question"], a["answer"]) for a in answers] == [("one", "Answer one"), ("two", "Answer two"), ("three", "Answer three")]
-    assert len(model.calls) == 5
+    assert len(model.calls) == 6
     assert "Retrieved response 3:" in model.calls[-1]["messages"][-1].content
 
 def test_single_branch_always_uses_the_same_aggregation_path(settings):
     service, model, _ = make_service(settings, resolver=resolver_for(questions=["one"], research=lambda *_: AIMessage(content="Research result")))
     final, _ = run_turn(service)
-    assert len(model.calls) == 3
+    assert len(model.calls) == 4
     assert "Research result" in model.calls[-1]["messages"][-1].content
     assert final["state"]["messages"][-1].content.startswith("Final answer:")
 

@@ -8,7 +8,7 @@ def test_reference_service_search_answer_and_aggregate(settings):
     final, frames = run_turn(service)
     assert not final["pending"]
     assert final["state"]["messages"][-1].content == "Final answer: 230 V.\nSources:\n- guide.pdf"
-    assert len(model.calls) == 4
+    assert len(model.calls) == 5
     assert service.retriever.calls == [("voltage", 7, settings.retrieval_min_score)]
     message = tool_messages(model)[0]
     assert str(results[0].parent_id) in message.content and message.artifact["results"]
@@ -29,7 +29,7 @@ def test_empty_search_and_unready_index_are_distinct(settings):
         service, model, _ = make_service(settings, texts=(), ready=ready)
         final, _ = run_turn(service)
         assert not final["pending"] and tool_messages(model)[0].content == marker
-        assert len(model.calls) == 4
+        assert len(model.calls) == 5
 
 def test_model_may_choose_second_search(settings):
     def research(messages, *_):

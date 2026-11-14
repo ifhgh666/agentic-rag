@@ -19,7 +19,7 @@ def test_single_question_uses_native_research_and_always_aggregates():
     result = engine.invoke({'messages': [HumanMessage(content='What voltage?')]},
                            {'configurable': {'thread_id': 'single'}, 'recursion_limit': 50})
     assert result['messages'][-1].content == 'Final answer: 230 V.\nSources:\n- guide.pdf'
-    assert len(model.calls) == 4  # rewrite, first research, answer, aggregate
+    assert len(model.calls) == 5  # route, rewrite, first research, answer, aggregate
     assert result['agent_answers'][0]['answer'].startswith('The voltage')
     assert result['agent_answers'][0]['contexts']
     aggregate_input = model.calls[-1]['messages'][-1].content
@@ -41,4 +41,4 @@ def test_no_tool_answer_is_collected_without_old_retrieval_or_citation_gate():
         {'messages': [HumanMessage(content='Question')]},
         {'configurable': {'thread_id': 'no-tools'}, 'recursion_limit': 50})
     assert result['agent_answers'][0]['answer'] == 'No sufficient information in these sources.'
-    assert len(model.calls) == 3
+    assert len(model.calls) == 4

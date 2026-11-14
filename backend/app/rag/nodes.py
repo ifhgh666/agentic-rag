@@ -2,7 +2,7 @@ from typing import Literal, Set
 from langchain_core.messages import SystemMessage, HumanMessage, RemoveMessage, AIMessage, ToolMessage
 from langgraph.types import Command
 from .graph_state import State, AgentState
-from .schemas import QueryAnalysis
+from .schemas import QueryAnalysis, ToolRouting
 from .prompts import *
 from .tools import estimate_context_tokens
 from .graph_state import BASE_TOKEN_THRESHOLD, CHILD_CHUNK_SEPARATOR, MAIN_HISTORY_MESSAGES_TO_KEEP, TOKEN_GROWTH_FACTOR
@@ -74,6 +74,19 @@ def _recent_conversation(messages, pending_query="") -> list:
 
     return recent_messages
 
+def select_tool(state: State, llm):
+    messages = state["messages"]
+    summary = state.get("conversation_summary", "")
+    recent = _format_conversation(_recent_conversation(messages))
+    current = str(messages[-1].content).strip()
+    context = f"Conversation Summary:\n{summary}\n\nRecent Conversation:\n{recent}\n\nUser Query:\n{current}"
+    decision = llm.with_structured_output(ToolRouting).invoke([
+        SystemMessage(content=get_tool_routing_prompt()),
+        HumanMessage(content=context),
+    ])
+    return {"needs_knowledge": decision.needs_knowledge}
+
+
 def summarize_history(state: State, llm):
     messages = state.get("messages", [])
     updates = {"agent_answers": [{"__reset__": True}]}
@@ -106,6 +119,23 @@ def summarize_history(state: State, llm):
     ])
     updates["conversation_summary"] = summary_response.content.strip()
     return updates
+
+def answer_direct(state: State, llm):
+    messages = [SystemMessage(content=get_direct_answer_prompt())]
+    summary = state.get("conversation_summary", "").strip()
+    if summary:
+        messages.append(HumanMessage(content=f"Conversation summary for context:\n{summary}"))
+    messages.extend(message for message in state["messages"] if _is_plain_conversation_message(message))
+    response = llm.invoke(messages)
+    return {
+        "messages": [AIMessage(content=response.content)],
+        "originalQuery": "",
+        "questionIsClear": True,
+        "pendingQuery": "",
+        "pendingClarifications": [],
+        "rewrittenQuestions": [],
+    }
+
 
 def rewrite_query(state: State, llm):
     last_message = state["messages"][-1]
@@ -154,7 +184,7 @@ def rewrite_query(state: State, llm):
             "messages": clarification_message_update,
         }
 
-    clarification = response.clarification_needed if response.clarification_needed and len(response.clarification_needed.strip()) > 10 else "I need more information to understand your question."
+    clarification = response.clarification_needed.strip() or "I need more information to understand your question."
     return {
         "questionIsClear": False,
         "originalQuery": "",

@@ -8,8 +8,8 @@ from openai import BadRequestError
 import pytest
 
 from app.core.reference_model import create_reference_model
-from app.rag.nodes import rewrite_query
-from app.rag.schemas import QueryAnalysis
+from app.rag.nodes import answer_direct, rewrite_query, select_tool
+from app.rag.schemas import QueryAnalysis, ToolRouting
 
 
 @pytest.mark.parametrize('model_name', ['configured-model', 'deepseek-v4-pro', 'deepseek-reasoner'])
@@ -35,7 +35,9 @@ def test_compatible_sdk_uses_native_function_calls_without_product_limits(settin
         'temperature': settings.llm_temperature, 'seed': settings.llm_seed, 'max_retries': 0,
         'default_headers': {'Accept-Encoding': 'identity'}}
     assert model.with_structured_output(QueryAnalysis) == 'native-parser'
-    assert observed == [(QueryAnalysis, {'method': 'function_calling'})]
+    assert model.with_structured_output(ToolRouting) == 'native-parser'
+    assert observed == [(QueryAnalysis, {'method': 'function_calling'}),
+                        (ToolRouting, {'method': 'function_calling'})]
     assert model.bind_tools(['actual tool']) == ('native-tools', ['actual tool'])
 
 
@@ -118,3 +120,42 @@ def test_deepseek_flash_provider_failure_is_not_retried_or_replaced(settings, mo
         with pytest.raises(BadRequestError):
             rewrite_query({'messages': [HumanMessage(content='A test question')]}, create_reference_model(configured))
     assert len(requests) == 1
+
+
+@pytest.mark.parametrize('question', ['你好', '你是谁', '你是什么模型'])
+def test_deepseek_flash_sdk_routes_with_a_schema_and_answers_with_no_bound_tools(settings, monkeypatch, question):
+    requests = []
+
+    def respond(request):
+        body = json.loads(request.content)
+        requests.append(body)
+        if len(requests) == 1:
+            message = {'role': 'assistant', 'content': None, 'tool_calls': [{
+                'id': 'route-1', 'type': 'function', 'function': {'name': 'ToolRouting',
+                'arguments': json.dumps({'needs_knowledge': False})}}]}
+        else:
+            message = {'role': 'assistant', 'content': '你好！'}
+        return httpx.Response(200, json={'id': 'test-only', 'object': 'chat.completion',
+            'created': 0, 'model': body['model'], 'choices': [{'index': 0, 'message': message,
+            'finish_reason': 'tool_calls' if message.get('tool_calls') else 'stop'}]})
+
+    configured = settings.model_copy(update={'llm_provider': 'openai_compatible',
+        'llm_model': 'deepseek-flash', 'llm_base_url': 'https://example.invalid/v1', 'llm_api_key': 'test-only'})
+    with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+        monkeypatch.setattr('langchain_openai.ChatOpenAI', lambda **kwargs: ChatOpenAI(**kwargs, http_client=client))
+        model = create_reference_model(configured)
+        state = {'messages': [HumanMessage(content=question)]}
+        assert select_tool(state, model) == {'needs_knowledge': False}
+        assert answer_direct(state, model)['messages'][-1].content == '你好！'
+
+    assert len(requests) == 2
+    assert all(body['thinking'] == {'type': 'disabled'} for body in requests)
+    assert requests[0]['tool_choice'] == {'type': 'function', 'function': {'name': 'ToolRouting'}}
+    assert not requests[1].get('tools') and not requests[1].get('tool_choice')
+    assert 'underlying model also take the direct path' in requests[0]['messages'][0]['content']
+    system_message = requests[1]['messages'][0]
+    assert system_message['role'] == 'system'
+    assert '文脉 · PDF 知识工作台' in system_message['content']
+    assert '“你是谁” or “你是什么模型”' in system_message['content']
+    assert 'only when verified in the system context' in system_message['content']
+    assert requests[1]['messages'][-1] == {'role': 'user', 'content': question}

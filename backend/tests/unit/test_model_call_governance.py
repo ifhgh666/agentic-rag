@@ -202,7 +202,7 @@ def test_native_observations_retain_input_estimates_without_admission(settings):
     service, model, _ = make_service(settings)
     observation = RequestObservation(settings)
     run_turn(service, callbacks=[observation])
-    assert len(observation.model_trace) == len(model.calls) == 4
+    assert len(observation.model_trace) == len(model.calls) == 5
     for trace, sent in zip(observation.model_trace, model.calls):
         assert trace["input_tokens"] == estimate_context_tokens(sent["messages"])
         assert "input_messages" not in trace and "tool_definitions" not in trace
